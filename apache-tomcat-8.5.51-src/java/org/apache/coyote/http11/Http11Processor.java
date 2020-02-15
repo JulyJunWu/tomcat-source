@@ -19,6 +19,7 @@ package org.apache.coyote.http11;
 import java.io.IOException;
 import java.io.InterruptedIOException;
 import java.nio.ByteBuffer;
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -50,6 +51,7 @@ import org.apache.tomcat.util.ExceptionUtils;
 import org.apache.tomcat.util.buf.ByteChunk;
 import org.apache.tomcat.util.buf.MessageBytes;
 import org.apache.tomcat.util.buf.StringUtils;
+import org.apache.tomcat.util.buf.UDecoder;
 import org.apache.tomcat.util.http.FastHttpDateFormat;
 import org.apache.tomcat.util.http.MimeHeaders;
 import org.apache.tomcat.util.http.parser.HttpParser;
@@ -482,7 +484,7 @@ public class Http11Processor extends AbstractProcessor {
     public SocketState service(SocketWrapperBase<?> socketWrapper)
         throws IOException {
         RequestInfo rp = request.getRequestProcessor();
-        rp.setStage(org.apache.coyote.Constants.STAGE_PARSE);
+        rp.setStage(org.apache.coyote.Constants.STAGE_PARSE); // 设置当前请求处理阶段为 解析阶段
 
         // Setting up the I/O
         setSocketWrapper(socketWrapper);
@@ -498,7 +500,7 @@ public class Http11Processor extends AbstractProcessor {
                 sendfileState == SendfileState.DONE && !endpoint.isPaused()) {
 
             // Parsing the request header
-            try {
+            try {    // 解析请求行 , 包括请求方法/HTTP协议/URI/请求参数
                 if (!inputBuffer.parseRequestLine(keptAlive)) {
                     if (inputBuffer.getParsingRequestLinePhase() == -1) {
                         return SocketState.UPGRADING;
@@ -515,7 +517,7 @@ public class Http11Processor extends AbstractProcessor {
                     keptAlive = true;
                     // Set this every time in case limit has been changed via JMX
                     request.getMimeHeaders().setLimit(endpoint.getMaxHeaderCount());
-                    if (!inputBuffer.parseHeaders()) {
+                    if (!inputBuffer.parseHeaders()) {  // 解析HTTP 请求头
                         // We've read part of the request, don't recycle it
                         // instead associate it with the socket
                         openSocket = true;
@@ -606,6 +608,14 @@ public class Http11Processor extends AbstractProcessor {
             if (getErrorState().isIoAllowed()) {
                 try {
                     rp.setStage(org.apache.coyote.Constants.STAGE_SERVICE);
+                    // 请求的所有数据
+                    ByteBuffer byteBuffer = inputBuffer.getByteBuffer();
+                    byte[] array = byteBuffer.array();
+                    String s = new String(array);
+                    String data = UDecoder.URLDecode(s, Charset.defaultCharset());
+                    log.info("请求数据->" + data);
+                    log.info("执行 getAdapter().service(request, response); ");
+
                     getAdapter().service(request, response);
                     // Handle when the response was committed before a serious
                     // error occurred.  Throwing a ServletException should both
@@ -639,7 +649,7 @@ public class Http11Processor extends AbstractProcessor {
                     getAdapter().log(request, response, 0);
                 }
             }
-
+            // 请求已经从Servlet容器中解脱出来了
             // Finish the handling of the request
             rp.setStage(org.apache.coyote.Constants.STAGE_ENDINPUT);
             if (!isAsync()) {
@@ -763,7 +773,7 @@ public class Http11Processor extends AbstractProcessor {
     }
 
 
-    /**
+    /** 设置读取过滤器(InputFilter)(此过滤器非Filter)
      * After reading the request headers, we have to setup the request filters.
      */
     private void prepareRequest() throws IOException {

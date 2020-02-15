@@ -339,9 +339,11 @@ public class CoyoteAdapter implements Adapter {
                 //check valves if we support async
                 request.setAsyncSupported(
                         connector.getService().getContainer().getPipeline().isAsyncSupported());
-                // Calling the container
+                // Calling the container 开始从容器中流通
+                log.info("开始容器中流通 connector.getService().getContainer().getPipeline().getFirst().invoke(request, response)");
                 connector.getService().getContainer().getPipeline().getFirst().invoke(
                         request, response);
+                log.info("容器流程结束");
             }
             if (request.isAsync()) {
                 async = true;
@@ -716,7 +718,7 @@ public class CoyoteAdapter implements Adapter {
             if (request.getServletContext().getEffectiveSessionTrackingModes()
                     .contains(SessionTrackingMode.URL)) {
 
-                // Get the session ID if there was one
+                // Get the session ID if there was one 获取sessionId
                 sessionID = request.getPathParameter(
                         SessionConfig.getSessionUriParamName(
                                 request.getContext()));
@@ -725,7 +727,7 @@ public class CoyoteAdapter implements Adapter {
                     request.setRequestedSessionURL(true);
                 }
             }
-
+            // 从Cookie中解析sessionId
             // Look for session ID in cookies and SSL session
             try {
                 parseSessionCookiesId(request);

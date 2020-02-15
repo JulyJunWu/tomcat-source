@@ -89,6 +89,7 @@ public class StandardEngine extends ContainerBase implements Engine {
 
     /**
      * The <code>Service</code> that owns this Engine, if any.
+     * 持有Service引用(准确来说应该是该Engine被哪个Service引用)
      */
     private Service service = null;
 

@@ -543,6 +543,7 @@ public class Catalina {
         initNaming();
 
         // Create and execute our Digester
+        //创建破壳器,就是用来解析server.xml
         Digester digester = createStartDigester();
 
         InputSource inputSource = null;

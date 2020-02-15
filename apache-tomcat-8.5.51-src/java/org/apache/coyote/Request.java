@@ -78,19 +78,23 @@ public final class Request {
 
 
     // ----------------------------------------------------- Instance Variables
-
+    // 请求的端口号
     private int serverPort = -1;
+    // hostname , 相当于127.0.0.1
     private final MessageBytes serverNameMB = MessageBytes.newInstance();
 
     private int remotePort;
     private int localPort;
 
     private final MessageBytes schemeMB = MessageBytes.newInstance();
-
+    // 封装请求方法
     private final MessageBytes methodMB = MessageBytes.newInstance();
+    // 封装URI , 如http://127.0.0.1/hello ,则是 /hello
     private final MessageBytes uriMB = MessageBytes.newInstance();
     private final MessageBytes decodedUriMB = MessageBytes.newInstance();
+    // 封装 url中的 参数
     private final MessageBytes queryMB = MessageBytes.newInstance();
+    // 封装请求的协议, 如HTTP/1.1
     private final MessageBytes protoMB = MessageBytes.newInstance();
 
     // remote address/host
@@ -120,7 +124,7 @@ public final class Request {
 
 
     /**
-     * URL decoder.
+     * URL decoder.  对URL中的字符串进行解码,防止中文乱码
      */
     private final UDecoder urlDecoder = new UDecoder();
 
@@ -141,6 +145,9 @@ public final class Request {
     private boolean expectation = false;
 
     private final ServerCookies serverCookies = new ServerCookies(INITIAL_COOKIE_SIZE);
+    /**
+     * 保存URL中的参数,并解析
+     */
     private final Parameters parameters = new Parameters();
 
     private final MessageBytes remoteUser = MessageBytes.newInstance();

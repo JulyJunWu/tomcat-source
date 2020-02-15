@@ -53,6 +53,9 @@ public final class Parameters {
 
     private final Map<String,ArrayList<String>> paramHashValues =
             new LinkedHashMap<>();
+    /**
+     * 是否已经解析过了 , true : 已经解析过了
+     */
     private boolean didQueryParameters=false;
 
     private MessageBytes queryMB;
@@ -60,7 +63,13 @@ public final class Parameters {
     private UDecoder urlDec;
     private final MessageBytes decodedQuery = MessageBytes.newInstance();
 
+    /**
+     * 解析body的编码
+     */
     private Charset charset = StandardCharsets.ISO_8859_1;
+    /**
+     *  解析url编码
+     */
     private Charset queryStringCharset = StandardCharsets.UTF_8;
 
     private int limit = -1;
@@ -199,7 +208,7 @@ public final class Parameters {
         }
     }
     // -------------------- Processing --------------------
-    /** Process the query string into parameters
+    /** Process the query string into parameters  2511
      */
     public void handleQueryParameters() {
         if (didQueryParameters) {
@@ -274,6 +283,13 @@ public final class Parameters {
         processParameters(bytes, start, len, charset);
     }
 
+    /**
+     * 解析参数
+     * @param bytes
+     * @param start
+     * @param len
+     * @param charset
+     */
     private void processParameters(byte bytes[], int start, int len, Charset charset) {
 
         if(log.isDebugEnabled()) {

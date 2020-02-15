@@ -101,6 +101,8 @@ public class Connector extends LifecycleMBeanBase  {
 
     /**
      * The <code>Service</code> we are associated with (if any).
+     *
+     * 被持有的Service引用,就是哪一个Service:  Connector []  , Engine
      */
     protected Service service = null;
 
@@ -236,6 +238,7 @@ public class Connector extends LifecycleMBeanBase  {
     /**
      * Coyote Protocol handler class name.
      * Defaults to the Coyote HTTP/1.1 protocolHandler.
+     * http1.1协议
      */
     protected String protocolHandlerClassName =
         "org.apache.coyote.http11.Http11NioProtocol";
@@ -800,7 +803,7 @@ public class Connector extends LifecycleMBeanBase  {
 
     /**
      * Set the URI encoding to be used for the URI.
-     *
+     * 这边就是解决 请求乱码的地方
      * @param URIEncoding The new URI character encoding.
      */
     public void setURIEncoding(String URIEncoding) {

@@ -43,12 +43,14 @@ public abstract class LifecycleBase implements Lifecycle {
 
     /**
      * The list of registered LifecycleListeners for event notifications.
+     * 生命周期观察者监听
      */
     private final List<LifecycleListener> lifecycleListeners = new CopyOnWriteArrayList<>();
 
 
     /**
      * The current state of the source component.
+     * 生命周期当前状态
      */
     private volatile LifecycleState state = LifecycleState.NEW;
 
@@ -125,6 +127,10 @@ public abstract class LifecycleBase implements Lifecycle {
     }
 
 
+    /**
+     * 模板模式
+     * @throws LifecycleException
+     */
     @Override
     public final synchronized void init() throws LifecycleException {
         if (!state.equals(LifecycleState.NEW)) {
@@ -133,6 +139,7 @@ public abstract class LifecycleBase implements Lifecycle {
 
         try {
             setStateInternal(LifecycleState.INITIALIZING, null, false);
+            // 由子类自行实现逻辑
             initInternal();
             setStateInternal(LifecycleState.INITIALIZED, null, false);
         } catch (Throwable t) {
@@ -151,6 +158,7 @@ public abstract class LifecycleBase implements Lifecycle {
 
 
     /**
+     * 模板模式
      * {@inheritDoc}
      */
     @Override
@@ -383,6 +391,14 @@ public abstract class LifecycleBase implements Lifecycle {
     }
 
 
+    /**
+     *  1.设置当前生命周期的状态
+     *  2.通知所有的观察者,触发生命周期事件
+     * @param state
+     * @param data
+     * @param check
+     * @throws LifecycleException
+     */
     private synchronized void setStateInternal(LifecycleState state, Object data, boolean check)
             throws LifecycleException {
 

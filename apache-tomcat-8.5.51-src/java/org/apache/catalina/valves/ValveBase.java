@@ -62,6 +62,7 @@ public abstract class ValveBase extends LifecycleMBeanBase implements Contained,
 
     /**
      * The Container whose pipeline this Valve is a component of.
+     * 这个容器应该和Pipeline中的一样
      */
     protected Container container = null;
 
@@ -74,6 +75,7 @@ public abstract class ValveBase extends LifecycleMBeanBase implements Contained,
 
     /**
      * The next Valve in the pipeline this Valve is a component of.
+     * 下一个阀门
      */
     protected Valve next = null;
 

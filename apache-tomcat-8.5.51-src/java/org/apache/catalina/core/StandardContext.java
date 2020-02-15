@@ -237,6 +237,8 @@ public class StandardContext extends ContainerBase
 
     /**
      * The ordered set of ServletContainerInitializers for this web application.
+     *
+     *       接口比较重要
      */
     private Map<ServletContainerInitializer,Set<Class<?>>> initializers =
         new LinkedHashMap<>();

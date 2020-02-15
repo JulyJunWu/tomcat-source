@@ -686,7 +686,7 @@ public abstract class AbstractProtocol<S> implements ProtocolHandler,
         private final AbstractProtocol<S> proto;
         private final RequestGroupInfo global = new RequestGroupInfo();
         private final AtomicLong registerCount = new AtomicLong(0);
-        private final Map<S,Processor> connections = new ConcurrentHashMap<>();
+        private final Map<S,Processor> connections = new ConcurrentHashMap<>();  // 保存正在请求中的处理
         private final RecycledProcessors recycledProcessors = new RecycledProcessors(this);
 
         public ConnectionHandler(AbstractProtocol<S> proto) {
@@ -815,6 +815,7 @@ public abstract class AbstractProtocol<S> implements ProtocolHandler,
 
                 SocketState state = SocketState.CLOSED;
                 do {
+                    //主要逻辑是在此处,进行后续的处理
                     state = processor.process(wrapper, status);
 
                     if (state == SocketState.UPGRADING) {

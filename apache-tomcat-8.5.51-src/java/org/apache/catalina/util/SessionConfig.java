@@ -46,7 +46,7 @@ public class SessionConfig {
      * Determine the name to use for the session path parameter for the provided
      * context.
      * @param context The context
-     * @return the parameter name for the session
+     * @return the parameter name for the session  获取session的名称
      */
     public static String getSessionUriParamName(Context context) {
 

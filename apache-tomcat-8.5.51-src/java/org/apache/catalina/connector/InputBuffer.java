@@ -361,7 +361,9 @@ public class InputBuffer extends Reader
         return bb.get() & 0xFF;
     }
 
-
+    /**
+     *  使用数组b来装载
+     */
     public int read(byte[] b, int off, int len) throws IOException {
         if (closed) {
             throw new IOException(sm.getString("inputBuffer.streamClosed"));

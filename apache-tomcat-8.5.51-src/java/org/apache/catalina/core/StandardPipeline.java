@@ -61,9 +61,7 @@ public class StandardPipeline extends LifecycleBase
      * Construct a new StandardPipeline instance with no associated Container.
      */
     public StandardPipeline() {
-
         this(null);
-
     }
 
 
@@ -74,7 +72,6 @@ public class StandardPipeline extends LifecycleBase
      * @param container The container we should be associated with
      */
     public StandardPipeline(Container container) {
-
         super();
         setContainer(container);
 
@@ -86,18 +83,21 @@ public class StandardPipeline extends LifecycleBase
 
     /**
      * The basic Valve (if any) associated with this Pipeline.
+     * 基础的阀门,有点类似于拦截器
      */
     protected Valve basic = null;
 
 
     /**
      * The Container with which this Pipeline is associated.
+     * 被引用的容器
      */
     protected Container container = null;
 
 
     /**
      * The first valve associated with this Pipeline.
+     * 首个Valve , 链表的头部
      */
     protected Valve first = null;
 

@@ -166,7 +166,7 @@ public abstract class AbstractEndpoint<S> {
 
 
     /**
-     * Will be set to true whenever the endpoint is paused.
+     * Will be set to true whenever the endpoint is paused. 有点类似开关控制器,该端点是否暂停
      */
     protected volatile boolean paused = false;
 
@@ -496,7 +496,9 @@ public abstract class AbstractEndpoint<S> {
      */
     private int port;
     public int getPort() { return port; }
-    public void setPort(int port ) { this.port=port; }
+    public void setPort(int port ) {
+        this.port=port;
+    }
 
 
     public final int getLocalPort() {
@@ -517,7 +519,9 @@ public abstract class AbstractEndpoint<S> {
      */
     private InetAddress address;
     public InetAddress getAddress() { return address; }
-    public void setAddress(InetAddress address) { this.address = address; }
+    public void setAddress(InetAddress address) {
+        this.address = address;
+    }
 
 
     /**
@@ -631,6 +635,9 @@ public abstract class AbstractEndpoint<S> {
      */
     public abstract boolean isAlpnSupported();
 
+    /**
+     * 线程池核心数量
+     */
     private int minSpareThreads = 10;
     public void setMinSpareThreads(int minSpareThreads) {
         this.minSpareThreads = minSpareThreads;
@@ -657,6 +664,7 @@ public abstract class AbstractEndpoint<S> {
 
     /**
      * Maximum amount of worker threads.
+     * 线程池最大的数量
      */
     private int maxThreads = 200;
     public void setMaxThreads(int maxThreads) {
@@ -769,7 +777,9 @@ public abstract class AbstractEndpoint<S> {
      * Handling of accepted sockets.
      */
     private Handler<S> handler = null;
-    public void setHandler(Handler<S> handler ) { this.handler = handler; }
+    public void setHandler(Handler<S> handler ) {
+        this.handler = handler;
+    }
     public Handler<S> getHandler() { return handler; }
 
 
@@ -888,7 +898,9 @@ public abstract class AbstractEndpoint<S> {
         return paused;
     }
 
-
+    /**
+     * 执行的时机: 在Connector.startInternal 时执行
+     */
     public void createExecutor() {
         internalExecutor = true;
         TaskQueue taskqueue = new TaskQueue();
@@ -1069,12 +1081,17 @@ public abstract class AbstractEndpoint<S> {
             if (socketWrapper == null) {
                 return false;
             }
+            // 又是一个可复用的任务(Runnable)
             SocketProcessorBase<S> sc = processorCache.pop();
+
+            //如果为null,则创建一个新的,将参数封装到Runnable中,提交到线程池运行
             if (sc == null) {
                 sc = createSocketProcessor(socketWrapper, event);
             } else {
+                // 不为null,重置新的属性,也就是从队列中取出缓存实例复用
                 sc.reset(socketWrapper, event);
             }
+            // 提交到线程池运行
             Executor executor = getExecutor();
             if (dispatch && executor != null) {
                 executor.execute(sc);

@@ -1148,6 +1148,7 @@ public class Request implements org.apache.catalina.servlet4preview.http.HttpSer
     public String getParameter(String name) {
 
         if (!parametersParsed) {
+            // 解析URL参数
             parseParameters();
         }
 
@@ -3199,7 +3200,7 @@ public class Request implements org.apache.catalina.servlet4preview.http.HttpSer
 
 
     /**
-     * Parse request parameters.
+     * Parse request parameters. 解析body和URL中的的参数
      */
     protected void parseParameters() {
 
@@ -3209,6 +3210,7 @@ public class Request implements org.apache.catalina.servlet4preview.http.HttpSer
         boolean success = false;
         try {
             // Set this every time in case limit has been changed via JMX
+            // 设置允许的参数数量
             parameters.setLimit(getConnector().getMaxParameterCount());
 
             // getCharacterEncoding() may have been overridden to search for
@@ -3217,12 +3219,13 @@ public class Request implements org.apache.catalina.servlet4preview.http.HttpSer
 
             boolean useBodyEncodingForURI = connector.getUseBodyEncodingForURI();
             parameters.setCharset(charset);
+            // 是否将解析BODY的编码用在解析URL上,是否公用同一个编码
             if (useBodyEncodingForURI) {
                 parameters.setQueryStringCharset(charset);
             }
             // Note: If !useBodyEncodingForURI, the query string encoding is
             //       that set towards the start of CoyoyeAdapter.service()
-
+            // 解析URL参数
             parameters.handleQueryParameters();
 
             if (usingInputStream || usingReader) {
@@ -3240,7 +3243,7 @@ public class Request implements org.apache.catalina.servlet4preview.http.HttpSer
             } else {
                 contentType = contentType.trim();
             }
-
+            // 如果是这种类型,则解析 , 这个应该是上传文件???
             if ("multipart/form-data".equals(contentType)) {
                 parseParts(false);
                 success = true;
@@ -3251,7 +3254,7 @@ public class Request implements org.apache.catalina.servlet4preview.http.HttpSer
                 success = true;
                 return;
             }
-
+            //如果不是这种类型的则不解析
             if (!("application/x-www-form-urlencoded".equals(contentType))) {
                 success = true;
                 return;
@@ -3280,7 +3283,7 @@ public class Request implements org.apache.catalina.servlet4preview.http.HttpSer
                 } else {
                     formData = new byte[len];
                 }
-                try {
+                try { // 开始读取字节数据
                     if (readPostBody(formData, len) != len) {
                         parameters.setParseFailedReason(FailReason.REQUEST_BODY_INCOMPLETE);
                         return;

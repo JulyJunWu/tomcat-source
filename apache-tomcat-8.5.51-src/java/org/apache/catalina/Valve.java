@@ -36,6 +36,11 @@ import org.apache.catalina.connector.Response;
  * @author Craig R. McClanahan
  * @author Gunnar Rjnning
  * @author Peter Donald
+ *
+ *  单向链表结构
+ *
+ *
+ *
  */
 public interface Valve {
 

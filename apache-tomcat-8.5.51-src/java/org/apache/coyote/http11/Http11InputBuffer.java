@@ -16,12 +16,6 @@
  */
 package org.apache.coyote.http11;
 
-import java.io.EOFException;
-import java.io.IOException;
-import java.nio.ByteBuffer;
-import java.nio.charset.StandardCharsets;
-import java.util.Arrays;
-
 import org.apache.coyote.InputBuffer;
 import org.apache.coyote.Request;
 import org.apache.juli.logging.Log;
@@ -34,6 +28,12 @@ import org.apache.tomcat.util.http.parser.HttpParser;
 import org.apache.tomcat.util.net.ApplicationBufferHandler;
 import org.apache.tomcat.util.net.SocketWrapperBase;
 import org.apache.tomcat.util.res.StringManager;
+
+import java.io.EOFException;
+import java.io.IOException;
+import java.nio.ByteBuffer;
+import java.nio.charset.StandardCharsets;
+import java.util.Arrays;
 
 /**
  * InputBuffer for HTTP that provides request header parsing as well as transfer
@@ -69,7 +69,7 @@ public class Http11InputBuffer implements InputBuffer, ApplicationBufferHandler 
     private final boolean rejectIllegalHeader;
 
     /**
-     * State.
+     * State.  解析头部的标志,如果是true则代表还未解析,允许解析 , 如果是false,则代表已经解析完毕,不允许解析,抛出异常
      */
     private boolean parsingHeader;
 
@@ -343,10 +343,10 @@ public class Http11InputBuffer implements InputBuffer, ApplicationBufferHandler 
      * the whole line.
      *
      * @return true if data is properly fed; false if no data is available
-     * immediately and thread should be freed
+     * immediately and thread should be freed  解析请求行 ,  注意 ::: 解析请求体不要调用这个
      */
     boolean parseRequestLine(boolean keptAlive) throws IOException {
-
+        log.info("解析请求行包括请求 方法/协议/URI/请求参数");
         // check state
         if (!parsingRequestLine) {
             return true;
@@ -375,7 +375,7 @@ public class Http11InputBuffer implements InputBuffer, ApplicationBufferHandler 
                     wrapper.setReadTimeout(wrapper.getEndpoint().getConnectionTimeout());
                 }
                 if (!keptAlive && byteBuffer.position() == 0 && byteBuffer.limit() >= CLIENT_PREFACE_START.length - 1) {
-                    boolean prefaceMatch = true;
+                    boolean prefaceMatch = true; // 验证请求是否某种特定的开头
                     for (int i = 0; i < CLIENT_PREFACE_START.length && prefaceMatch; i++) {
                         if (CLIENT_PREFACE_START[i] != byteBuffer.get(i)) {
                             prefaceMatch = false;
@@ -392,10 +392,9 @@ public class Http11InputBuffer implements InputBuffer, ApplicationBufferHandler 
                 if (request.getStartTime() < 0) {
                     request.setStartTime(System.currentTimeMillis());
                 }
-                chr = byteBuffer.get();
+                chr = byteBuffer.get(); // 读取一个字节,position + 1 , 指定获取某个索引的数据就不会增加position
             } while ((chr == Constants.CR) || (chr == Constants.LF));
             byteBuffer.position(byteBuffer.position() - 1);
-
             parsingRequestLineStart = byteBuffer.position();
             parsingRequestLinePhase = 2;
             if (log.isDebugEnabled()) {
@@ -404,6 +403,7 @@ public class Http11InputBuffer implements InputBuffer, ApplicationBufferHandler 
             }
         }
         if (parsingRequestLinePhase == 2) {
+            log.info("读取请求方法");
             //
             // Reading the method name
             // Method name is a token
@@ -418,9 +418,9 @@ public class Http11InputBuffer implements InputBuffer, ApplicationBufferHandler 
                 // Spec says method name is a token followed by a single SP but
                 // also be tolerant of multiple SP and/or HT.
                 int pos = byteBuffer.position();
-                byte chr = byteBuffer.get();
+                byte chr = byteBuffer.get();// 解析请求方法
                 if (chr == Constants.SP || chr == Constants.HT) {
-                    space = true;
+                    space = true; //设置请求方法
                     request.method().setBytes(byteBuffer.array(), parsingRequestLineStart,
                             pos - parsingRequestLineStart);
                 } else if (!HttpParser.isToken(chr)) {
@@ -432,7 +432,7 @@ public class Http11InputBuffer implements InputBuffer, ApplicationBufferHandler 
             }
             parsingRequestLinePhase = 3;
         }
-        if (parsingRequestLinePhase == 3) {
+        if (parsingRequestLinePhase == 3) { // 更多的是过滤空格,调整数据的的位置
             // Spec says single SP but also be tolerant of multiple SP and/or HT
             boolean space = true;
             while (space) {
@@ -459,7 +459,7 @@ public class Http11InputBuffer implements InputBuffer, ApplicationBufferHandler 
             //
             boolean space = false;
             while (!space) {
-                // Read new bytes if needed
+                // Read new bytes if needed 如果当前的缓冲区数据不足,需要继续从SocketChanel中继续读取
                 if (byteBuffer.position() >= byteBuffer.limit()) {
                     if (!fill(false)) // request line parsing
                         return false;
@@ -566,15 +566,16 @@ public class Http11InputBuffer implements InputBuffer, ApplicationBufferHandler 
 
 
     /**
-     * Parse the HTTP headers.
+     * Parse the HTTP headers.  解析HTTP头部
      */
     boolean parseHeaders() throws IOException {
         if (!parsingHeader) {
             throw new IllegalStateException(sm.getString("iib.parseheaders.ise.error"));
         }
-
+        // 头部解析状态
         HeaderParseStatus status = HeaderParseStatus.HAVE_MORE_HEADERS;
-
+        // 不断循环解析头部的name和value,直到所有的属性解析完毕
+        log.info("解析请求头开始");
         do {
             status = parseHeader();
             // Checking that
@@ -589,6 +590,7 @@ public class Http11InputBuffer implements InputBuffer, ApplicationBufferHandler 
                 throw new IllegalArgumentException(sm.getString("iib.requestheadertoolarge.error"));
             }
         } while (status == HeaderParseStatus.HAVE_MORE_HEADERS);
+        log.info("解析请求头结束");
         if (status == HeaderParseStatus.DONE) {
             parsingHeader = false;
             end = byteBuffer.position();
@@ -748,7 +750,7 @@ public class Http11InputBuffer implements InputBuffer, ApplicationBufferHandler 
 
 
     /**
-     * Parse an HTTP header.
+     * Parse an HTTP header.  解析HTTP 头
      *
      * @return false after reading a blank line (which indicates that the
      * HTTP header parsing is done
@@ -814,7 +816,7 @@ public class Http11InputBuffer implements InputBuffer, ApplicationBufferHandler 
 
             int pos = byteBuffer.position();
             chr = byteBuffer.get();
-            if (chr == Constants.COLON) {
+            if (chr == Constants.COLON) { // 此处表示的是值
                 headerParsePos = HeaderParsePosition.HEADER_VALUE_START;
                 headerData.headerValue = headers.addValue(byteBuffer.array(), headerData.start,
                         pos - headerData.start);
@@ -833,7 +835,7 @@ public class Http11InputBuffer implements InputBuffer, ApplicationBufferHandler 
                 return skipLine();
             }
 
-            // chr is next byte of header name. Convert to lowercase.
+            // chr is next byte of header name. Convert to lowercase.  将大写的字母转换成小写的字母
             if ((chr >= Constants.A) && (chr <= Constants.Z)) {
                 byteBuffer.put(pos, (byte) (chr - Constants.LC_OFFSET));
             }
@@ -853,7 +855,7 @@ public class Http11InputBuffer implements InputBuffer, ApplicationBufferHandler 
                headerParsePos == HeaderParsePosition.HEADER_MULTI_LINE) {
 
             if (headerParsePos == HeaderParsePosition.HEADER_VALUE_START) {
-                // Skipping spaces
+                // Skipping spaces 过滤空格
                 while (true) {
                     // Read new bytes if needed
                     if (byteBuffer.position() >= byteBuffer.limit()) {
@@ -1122,7 +1124,7 @@ public class Http11InputBuffer implements InputBuffer, ApplicationBufferHandler 
             }
 
             int length = byteBuffer.remaining();
-            handler.setByteBuffer(byteBuffer.duplicate());
+            handler.setByteBuffer(byteBuffer.duplicate());  // byteBuffer.duplicate() 创建一个新的ByteBuffer,byte数组是共享,但是索引是独立
             byteBuffer.position(byteBuffer.limit());
 
             return length;

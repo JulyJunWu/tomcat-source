@@ -204,6 +204,7 @@ public abstract class ContainerBase extends LifecycleMBeanBase
 
     /**
      * The parent Container to which this Container is a child.
+     * 父容器
      */
     protected Container parent = null;
 
@@ -216,6 +217,7 @@ public abstract class ContainerBase extends LifecycleMBeanBase
 
     /**
      * The Pipeline object with which this Container is associated.
+     * 管道
      */
     protected final Pipeline pipeline = new StandardPipeline(this);
 
@@ -253,6 +255,7 @@ public abstract class ContainerBase extends LifecycleMBeanBase
 
     /**
      * The background thread.
+     * 后台线程,用来重新加载???
      */
     private Thread thread = null;
 
@@ -276,6 +279,9 @@ public abstract class ContainerBase extends LifecycleMBeanBase
      * children associated with this container.
      */
     private int startStopThreads = 1;
+    /**
+     * 该线程池是用来执行 开停事件????
+     */
     protected ThreadPoolExecutor startStopExecutor;
 
 

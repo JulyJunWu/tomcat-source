@@ -47,13 +47,13 @@ public final class Constants {
 
 
     /**
-     * SP.
+     * SP.  空格
      */
     public static final byte SP = (byte) ' ';
 
 
     /**
-     * HT.
+     * HT.  制表符
      */
     public static final byte HT = (byte) '\t';
 

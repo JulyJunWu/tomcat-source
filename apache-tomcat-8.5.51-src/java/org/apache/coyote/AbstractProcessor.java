@@ -70,7 +70,7 @@ public abstract class AbstractProcessor extends AbstractProcessorLight implement
 
 
     /**
-     * Error state for the request/response currently being processed.
+     * Error state for the request/response currently being processed.  代表当前的请求/响应 的错误状态
      */
     private ErrorState errorState = ErrorState.NONE;
 
@@ -309,7 +309,7 @@ public abstract class AbstractProcessor extends AbstractProcessorLight implement
                         return;
                     }
                     port = port * 10 + c - '0';
-                }
+                }// 设置服务器端口号
                 request.setServerPort(port);
 
                 // Only need to copy the host name up to the :

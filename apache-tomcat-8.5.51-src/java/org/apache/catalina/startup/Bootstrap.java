@@ -63,6 +63,7 @@ public final class Bootstrap {
 
     static {
         // Will always be non-null
+        // 获取项目的根路径
         String userDir = System.getProperty("user.dir");
 
         // Home first
@@ -102,7 +103,7 @@ public final class Bootstrap {
                 homeFile = f.getAbsoluteFile();
             }
         }
-
+        // 设置系统变量catalina.home(tomcat安装路径)
         catalinaHomeFile = homeFile;
         System.setProperty(
                 Globals.CATALINA_HOME_PROP, catalinaHomeFile.getPath());
@@ -120,6 +121,8 @@ public final class Bootstrap {
             }
             catalinaBaseFile = baseFile;
         }
+        // 设置catalina.base系统变量(实例安装路径)
+        // 一般情况下 这个2个路径都是在同一个
         System.setProperty(
                 Globals.CATALINA_BASE_PROP, catalinaBaseFile.getPath());
     }
@@ -497,7 +500,7 @@ public final class Bootstrap {
             System.exit(1);
         }
     }
-
+;
 
     /**
      * Obtain the name of configured home (binary) directory. Note that home and

@@ -219,7 +219,7 @@ public class StandardService extends LifecycleMBeanBase implements Service {
             System.arraycopy(connectors, 0, results, 0, connectors.length);
             results[connectors.length] = connector;
             connectors = results;
-
+            //状态只有在STARTING 和Started/STOPPING_PREP才是可用的
             if (getState().isAvailable()) {
                 try {
                     connector.start();
