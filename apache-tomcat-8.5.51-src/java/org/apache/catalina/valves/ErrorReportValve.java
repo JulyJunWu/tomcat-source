@@ -17,6 +17,7 @@
 package org.apache.catalina.valves;
 
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.io.Writer;
 import java.util.Scanner;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -79,7 +80,13 @@ public class ErrorReportValve extends ValveBase {
 
         // Perform the request
         getNext().invoke(request, response);
-
+        boolean committed = response.isCommitted();
+        if (!committed){
+            PrintWriter writer = response.getWriter();
+            writer.print("访问成功!\n");
+            writer.print("Hello World");
+            writer.flush();
+        }
         if (response.isCommitted()) {
             if (response.setErrorReported()) {
                 // Error wasn't previously reported but we can't write an error

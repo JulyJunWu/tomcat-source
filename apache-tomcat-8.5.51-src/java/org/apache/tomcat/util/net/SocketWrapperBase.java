@@ -113,6 +113,10 @@ public abstract class SocketWrapperBase<E> {
         }
     }
 
+    /**
+     * 获取NioChannel
+     * @return
+     */
     public E getSocket() {
         return socket;
     }

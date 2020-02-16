@@ -23,9 +23,15 @@ import org.apache.tomcat.util.buf.ByteBufferUtils;
 public class SocketBufferHandler {
 
     private volatile boolean readBufferConfiguredForWrite = true;
+    /**
+     * 从客户端读取数据
+     */
     private volatile ByteBuffer readBuffer;
 
     private volatile boolean writeBufferConfiguredForWrite = true;
+    /**
+     * 往客户端写数据的
+     */
     private volatile ByteBuffer writeBuffer;
 
     private final boolean direct;

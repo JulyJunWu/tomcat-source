@@ -28,8 +28,8 @@ import java.nio.channels.SocketChannel;
 import org.apache.tomcat.util.net.NioEndpoint.Poller;
 import org.apache.tomcat.util.res.StringManager;
 
-/**
- * Base class for a SocketChannel wrapper used by the endpoint.
+ /**
+ * Base class for a SocketChannel wrapperused by the endpoint.
  * This way, logic for an SSL socket channel remains the same as for
  * a non SSL, making sure we don't need to code for any exception cases.
  *
@@ -44,6 +44,9 @@ public class NioChannel implements ByteChannel, ScatteringByteChannel, Gathering
     protected SocketChannel sc = null;
     protected SocketWrapperBase<NioChannel> socketWrapper = null;
 
+     /**
+      * 主要负责socket的读写
+      */
     protected final SocketBufferHandler bufHandler;
 
     protected Poller poller;
@@ -61,7 +64,6 @@ public class NioChannel implements ByteChannel, ScatteringByteChannel, Gathering
     public void reset() throws IOException {
         bufHandler.reset();
     }
-
 
     void setSocketWrapper(SocketWrapperBase<NioChannel> socketWrapper) {
         this.socketWrapper = socketWrapper;
@@ -188,6 +190,10 @@ public class NioChannel implements ByteChannel, ScatteringByteChannel, Gathering
         return poller;
     }
 
+     /**
+      * 获取的是该连接的SocketChannel
+      * @return
+      */
     public SocketChannel getIOChannel() {
         return sc;
     }
@@ -196,6 +202,10 @@ public class NioChannel implements ByteChannel, ScatteringByteChannel, Gathering
         return false;
     }
 
+     /**
+      * 只要有这个对象,握手就已经完成了
+      * @return
+      */
     public boolean isHandshakeComplete() {
         return true;
     }

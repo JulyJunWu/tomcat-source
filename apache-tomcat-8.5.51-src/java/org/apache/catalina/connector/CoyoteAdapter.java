@@ -17,16 +17,13 @@
 package org.apache.catalina.connector;
 
 import java.io.IOException;
+import java.io.PrintWriter;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.EnumSet;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import javax.servlet.ReadListener;
-import javax.servlet.RequestDispatcher;
-import javax.servlet.ServletException;
-import javax.servlet.SessionTrackingMode;
-import javax.servlet.WriteListener;
+import javax.servlet.*;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.catalina.Authenticator;
@@ -339,11 +336,15 @@ public class CoyoteAdapter implements Adapter {
                 //check valves if we support async
                 request.setAsyncSupported(
                         connector.getService().getContainer().getPipeline().isAsyncSupported());
+
+                boolean committed = response.isCommitted();
                 // Calling the container 开始从容器中流通
                 log.info("开始容器中流通 connector.getService().getContainer().getPipeline().getFirst().invoke(request, response)");
                 connector.getService().getContainer().getPipeline().getFirst().invoke(
                         request, response);
                 log.info("容器流程结束");
+                committed = response.isCommitted();
+                System.out.println(committed);
             }
             if (request.isAsync()) {
                 async = true;
@@ -377,7 +378,7 @@ public class CoyoteAdapter implements Adapter {
             }
 
         } catch (IOException e) {
-            // Ignore
+            System.out.println(e);
         } finally {
             AtomicBoolean error = new AtomicBoolean(false);
             res.action(ActionCode.IS_ERROR, error);

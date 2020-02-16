@@ -813,9 +813,13 @@ public class StandardContext extends ContainerBase
     private boolean useRelativeRedirects = !Globals.STRICT_SERVLET_COMPLIANCE;
 
     private boolean dispatchersUseEncodedPaths = true;
-
+    /**
+     * 请求的解析编码
+     */
     private String requestEncoding = null;
-
+    /**
+     * 响应的解析编码
+     */
     private String responseEncoding = null;
 
     private boolean allowMultipleLeadingForwardSlashInPath = false;

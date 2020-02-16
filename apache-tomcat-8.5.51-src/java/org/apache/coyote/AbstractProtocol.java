@@ -18,6 +18,8 @@ package org.apache.coyote;
 
 import java.net.InetAddress;
 import java.nio.ByteBuffer;
+import java.nio.channels.SocketChannel;
+import java.nio.charset.Charset;
 import java.util.Collections;
 import java.util.Map;
 import java.util.Set;
@@ -38,10 +40,12 @@ import javax.servlet.http.WebConnection;
 import org.apache.juli.logging.Log;
 import org.apache.tomcat.InstanceManager;
 import org.apache.tomcat.util.ExceptionUtils;
+import org.apache.tomcat.util.buf.UDecoder;
 import org.apache.tomcat.util.collections.SynchronizedStack;
 import org.apache.tomcat.util.modeler.Registry;
 import org.apache.tomcat.util.net.AbstractEndpoint;
 import org.apache.tomcat.util.net.AbstractEndpoint.Handler;
+import org.apache.tomcat.util.net.NioChannel;
 import org.apache.tomcat.util.net.SocketEvent;
 import org.apache.tomcat.util.net.SocketWrapperBase;
 import org.apache.tomcat.util.res.StringManager;
@@ -934,6 +938,7 @@ public abstract class AbstractProtocol<S> implements ProtocolHandler,
                             }
                         }
                     }
+                    //重置资源
                     release(processor);
                 }
                 return state;

@@ -153,13 +153,13 @@ public class Response implements HttpServletResponse {
 
 
     /**
-     * The associated output stream.
+     * The associated output stream.  与writer 二选一
      */
     protected CoyoteOutputStream outputStream;
 
 
     /**
-     * The associated writer.
+     * The associated writer. 与outputStream 二选一
      */
     protected CoyoteWriter writer;
 
@@ -186,8 +186,10 @@ public class Response implements HttpServletResponse {
      * Using output stream flag.
      */
     protected boolean usingOutputStream = false;
-
-
+    /**
+     *  输出流只能2选一,使用了其中一个就不能在此去获取另一
+     *  只能有一个是为true , 要么 usingOutputStream = true 要么 usingWriter = true , 两者互斥,不可兼得
+     */
     /**
      * Using writer flag.
      */

@@ -27,6 +27,7 @@ import org.apache.juli.logging.LogFactory;
  * Shared latch that allows the latch to be acquired a limited number of times
  * after which all subsequent requests to acquire the latch will be placed in a
  * FIFO queue until one of the shares is returned.
+ * 类似限流
  */
 public class LimitLatch {
 
@@ -106,6 +107,7 @@ public class LimitLatch {
 
 
     /**
+     * 计数+1 , 如果超出了限定的数量, 则是阻塞
      * Acquires a shared latch if one is available or waits for one if no shared
      * latch is current available.
      * @throws InterruptedException If the current thread is interrupted
@@ -118,6 +120,7 @@ public class LimitLatch {
     }
 
     /**
+     *  通过CAS的方式 计数减一
      * Releases a shared latch, making it available for another thread to use.
      * @return the previous counter value
      */

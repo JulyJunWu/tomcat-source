@@ -183,6 +183,7 @@ public abstract class AbstractEndpoint<S> {
 
     /**
      * Socket properties
+     * Socket的配置参数
      */
     protected SocketProperties socketProperties = new SocketProperties();
     public SocketProperties getSocketProperties() {
@@ -440,6 +441,10 @@ public abstract class AbstractEndpoint<S> {
     public int getAcceptorThreadPriority() { return acceptorThreadPriority; }
 
 
+    /**
+     * 最大连接数
+     * 设置为-1 则是不限制连接数
+     */
     private int maxConnections = 10000;
     public void setMaxConnections(int maxCon) {
         this.maxConnections = maxCon;
@@ -1074,6 +1079,8 @@ public abstract class AbstractEndpoint<S> {
      *                          container thread
      *
      * @return if processing was triggered successfully
+     *  1.将传递的属性包装成 SocketProcessorBase(这是一个Runnable)
+     *  2.将Runnable提交给线程池 ,Poller任务结束!
      */
     public boolean processSocket(SocketWrapperBase<S> socketWrapper,
             SocketEvent event, boolean dispatch) {
@@ -1091,7 +1098,7 @@ public abstract class AbstractEndpoint<S> {
                 // 不为null,重置新的属性,也就是从队列中取出缓存实例复用
                 sc.reset(socketWrapper, event);
             }
-            // 提交到线程池运行
+            // 提交到线程池运行,到了此处 Poller线程的使命已经完成,后续交给线程池处理
             Executor executor = getExecutor();
             if (dispatch && executor != null) {
                 executor.execute(sc);
@@ -1293,6 +1300,10 @@ public abstract class AbstractEndpoint<S> {
         connectionLimitLatch = null;
     }
 
+    /**
+     * 计数增加 或 阻塞
+     * @throws InterruptedException
+     */
     protected void countUpOrAwaitConnection() throws InterruptedException {
         if (maxConnections==-1) return;
         LimitLatch latch = connectionLimitLatch;

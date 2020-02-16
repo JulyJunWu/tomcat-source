@@ -146,7 +146,7 @@ public final class Request {
 
     private final ServerCookies serverCookies = new ServerCookies(INITIAL_COOKIE_SIZE);
     /**
-     * 保存URL中的参数,并解析
+     * 保存URL/body中的参数,并解析
      */
     private final Parameters parameters = new Parameters();
 
@@ -326,7 +326,6 @@ public final class Request {
                 charset = B2CConverter.getCharset(characterEncoding);
             }
         }
-
         return charset;
     }
 

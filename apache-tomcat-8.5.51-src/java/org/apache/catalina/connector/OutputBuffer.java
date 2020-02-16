@@ -309,11 +309,11 @@ public class OutputBuffer extends Writer {
         try {
             doFlush = true;
             if (initial) {
-                coyoteResponse.sendHeaders();
+                coyoteResponse.sendHeaders(); //将Http11OutputBuffer中的headBuffer字节数据复制到SocketWrapperBase中的writeBuffer中
                 initial = false;
             }
             if (cb.remaining() > 0) {
-                flushCharBuffer();
+                flushCharBuffer(); // 其实就是讲自身的CharByteBuffer(cb)字符流转换为ByteBuffer(bb)字节流
             }
             if (bb.remaining() > 0) {
                 flushByteBuffer();
@@ -841,9 +841,9 @@ public class OutputBuffer extends Writer {
         realWriteBytes(bb.slice());
         clear(bb);
     }
-
+    // 将自身的charByteBuffer写到自身的ByteBuffer(bb)中
     private void flushCharBuffer() throws IOException {
-        realWriteChars(cb.slice());
+        realWriteChars(cb.slice());  // slice: 复制新的Buffer对象,共享同一份字符数据,只不过各自维护自己的偏移量
         clear(cb);
     }
 
