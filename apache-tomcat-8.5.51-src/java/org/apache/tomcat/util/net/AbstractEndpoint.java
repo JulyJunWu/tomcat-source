@@ -1327,6 +1327,9 @@ public abstract class AbstractEndpoint<S> {
         return connectionLimitLatch;
     }
 
+    /**
+     * 将连接数重置为0
+     */
     protected void releaseConnectionLatch() {
         LimitLatch latch = connectionLimitLatch;
         if (latch!=null) latch.releaseAll();
@@ -1334,7 +1337,7 @@ public abstract class AbstractEndpoint<S> {
     }
 
     /**
-     * 计数增加 或 阻塞
+     * 连接计数增加 或 超出最大连接则阻塞
      * @throws InterruptedException
      */
     protected void countUpOrAwaitConnection() throws InterruptedException {
@@ -1343,6 +1346,10 @@ public abstract class AbstractEndpoint<S> {
         if (latch!=null) latch.countUpOrAwait();
     }
 
+    /**
+     * 当连接断开的时候,连接计数会减一
+     * @return
+     */
     protected long countDownConnection() {
         if (maxConnections==-1) return -1;
         LimitLatch latch = connectionLimitLatch;

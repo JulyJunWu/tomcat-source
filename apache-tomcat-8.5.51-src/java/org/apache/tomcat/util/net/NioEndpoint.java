@@ -22,16 +22,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.net.*;
 import java.nio.ByteBuffer;
-import java.nio.channels.CancelledKeyException;
-import java.nio.channels.Channel;
-import java.nio.channels.CompletionHandler;
-import java.nio.channels.FileChannel;
-import java.nio.channels.NetworkChannel;
-import java.nio.channels.SelectionKey;
-import java.nio.channels.Selector;
-import java.nio.channels.ServerSocketChannel;
-import java.nio.channels.SocketChannel;
-import java.nio.channels.WritableByteChannel;
+import java.nio.channels.*;
 import java.util.ConcurrentModificationException;
 import java.util.Iterator;
 import java.util.concurrent.CountDownLatch;
@@ -716,6 +707,10 @@ public class NioEndpoint extends AbstractJsseEndpoint<NioChannel> {
             selector.wakeup();
         }
 
+        /**
+         * 将任务放入队列中,等Poller线程拉取
+         * @param event
+         */
         private void addEvent(PollerEvent event) {
             events.offer(event);
             if ( wakeupCounter.incrementAndGet() == 0 ) selector.wakeup();
@@ -798,6 +793,11 @@ public class NioEndpoint extends AbstractJsseEndpoint<NioChannel> {
             NioSocketWrapper ka = null;
             try {
                 if ( key == null ) return null;//nothing to do
+                //------------------------------记录日志start
+                SocketChannel channel = (SocketChannel) key.channel();
+                InetSocketAddress remoteAddress = (InetSocketAddress) channel.getRemoteAddress();
+                log.info( remoteAddress.getHostName()+":"+ remoteAddress.getPort() + "断开连接");
+                //--------------------------------end
                 ka = (NioSocketWrapper) key.attach(null);
                 if (ka != null) {
                     // If attachment is non-null then there may be a current
