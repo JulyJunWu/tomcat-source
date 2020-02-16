@@ -847,7 +847,7 @@ public class OutputBuffer extends Writer {
      */
     private void flushCharBuffer() throws IOException {
         /**
-         *  slice() : 复制一份新的相同对象,共享同一个内容,各自维护自身的偏移量,起始position为0
+         *  slice() : 复制一份新的相同对象,共享同一个内容,各自维护自身的偏移量,起始position为0,limit为 原remaining()
          *  duplicate() : 复制一份新的对象,连同position,limit等等都相同
          */
         CharBuffer slice = cb.slice();

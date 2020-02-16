@@ -227,6 +227,7 @@ public class NioEndpoint extends AbstractJsseEndpoint<NioChannel> {
 
         if (!getUseInheritedChannel()) {
             serverSock = ServerSocketChannel.open();
+            //设置Socket配置
             socketProperties.setProperties(serverSock.socket());
             InetSocketAddress addr = (getAddress()!=null?new InetSocketAddress(getAddress(),getPort()):new InetSocketAddress(getPort()));
             serverSock.socket().bind(addr,getAcceptCount());
@@ -240,6 +241,7 @@ public class NioEndpoint extends AbstractJsseEndpoint<NioChannel> {
                 throw new IllegalArgumentException(sm.getString("endpoint.init.bind.inherited"));
             }
         }
+        //设置为阻塞模式
         serverSock.configureBlocking(true); //mimic APR behavior
 
         // Initialize thread count defaults for acceptor, poller
@@ -417,7 +419,7 @@ public class NioEndpoint extends AbstractJsseEndpoint<NioChannel> {
         // Process the connection
         try {
             //disable blocking, APR style, we are gonna be polling it
-            //设置为非阻塞模式
+            //将链接设置为非阻塞模式
             socket.configureBlocking(false);
             Socket sock = socket.socket();
             //设置socket的参数(TCP的参数)
@@ -473,7 +475,7 @@ public class NioEndpoint extends AbstractJsseEndpoint<NioChannel> {
     protected class Acceptor extends AbstractEndpoint.Acceptor {
 
         /**
-         * 接受外部的新连接,将链接包装成一个人任务,丢到poller的任务队列中
+         * 接受外部的新连接,将链接包装成一个任务,丢到poller的任务队列中
          * 阻塞模式, 与netty的boss线程不一样
          */
         @Override
@@ -508,7 +510,8 @@ public class NioEndpoint extends AbstractJsseEndpoint<NioChannel> {
                     try {
                         // Accept the next incoming connection from the server
                         // socket
-                        // 如果外部没有新的连接,那么在此处是阻塞的;
+                        // 如果accept队列新的连接,那么在此处是阻塞的;
+                        // 从accept()队列中取出一个连接处理,容量有上线,JDK默认是50,tomcat设置的是100,可以设置socket的backlog
                         socket = serverSock.accept();
                     } catch (IOException ioe) {
                         // We didn't get a socket
