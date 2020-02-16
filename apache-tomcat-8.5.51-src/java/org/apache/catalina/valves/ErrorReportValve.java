@@ -80,11 +80,10 @@ public class ErrorReportValve extends ValveBase {
 
         // Perform the request
         getNext().invoke(request, response);
-        boolean committed = response.isCommitted();
-        if (!committed){
+        if (!response.isCommitted()){
+            //测试使用,需删除
             PrintWriter writer = response.getWriter();
-            writer.print("访问成功!\n");
-            writer.print("Hello World");
+            writer.print("I will coming");
             writer.flush();
         }
         if (response.isCommitted()) {

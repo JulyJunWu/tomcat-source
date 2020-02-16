@@ -157,6 +157,7 @@ public class NioChannel implements ByteChannel, ScatteringByteChannel, Gathering
      * @return The number of bytes read, possibly zero, or <code>-1</code> if
      *         the channel has reached end-of-stream
      * @throws IOException If some other I/O error occurs
+     * 从socket中读取数据
      */
     @Override
     public int read(ByteBuffer dst) throws IOException {

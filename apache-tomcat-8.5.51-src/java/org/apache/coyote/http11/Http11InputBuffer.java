@@ -716,6 +716,8 @@ public class Http11InputBuffer implements InputBuffer, ApplicationBufferHandler 
      *
      * @return <code>true</code> if more data was added to the input buffer
      *         otherwise <code>false</code>
+     *
+     *         读取socket或者是拷贝readBuffer的数据到byteBuffer缓冲区
      */
     private boolean fill(boolean block) throws IOException {
 

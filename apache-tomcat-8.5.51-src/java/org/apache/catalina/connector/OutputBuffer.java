@@ -16,6 +16,16 @@
  */
 package org.apache.catalina.connector;
 
+import org.apache.catalina.Globals;
+import org.apache.coyote.ActionCode;
+import org.apache.coyote.CloseNowException;
+import org.apache.coyote.Response;
+import org.apache.tomcat.util.buf.B2CConverter;
+import org.apache.tomcat.util.buf.C2BConverter;
+import org.apache.tomcat.util.res.StringManager;
+
+import javax.servlet.WriteListener;
+import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.Writer;
 import java.nio.Buffer;
@@ -27,17 +37,6 @@ import java.security.PrivilegedActionException;
 import java.security.PrivilegedExceptionAction;
 import java.util.HashMap;
 import java.util.Map;
-
-import javax.servlet.WriteListener;
-import javax.servlet.http.HttpServletResponse;
-
-import org.apache.catalina.Globals;
-import org.apache.coyote.ActionCode;
-import org.apache.coyote.CloseNowException;
-import org.apache.coyote.Response;
-import org.apache.tomcat.util.buf.B2CConverter;
-import org.apache.tomcat.util.buf.C2BConverter;
-import org.apache.tomcat.util.res.StringManager;
 
 /**
  * The buffer used by Tomcat response. This is a derivative of the Tomcat 3.3
@@ -841,9 +840,18 @@ public class OutputBuffer extends Writer {
         realWriteBytes(bb.slice());
         clear(bb);
     }
-    // 将自身的charByteBuffer写到自身的ByteBuffer(bb)中
+
+    /**
+     * 将自身的charByteBuffer写到自身的ByteBuffer(bb)中
+     * @throws IOException
+     */
     private void flushCharBuffer() throws IOException {
-        realWriteChars(cb.slice());  // slice: 复制新的Buffer对象,共享同一份字符数据,只不过各自维护自己的偏移量
+        /**
+         *  slice() : 复制一份新的相同对象,共享同一个内容,各自维护自身的偏移量,起始position为0
+         *  duplicate() : 复制一份新的对象,连同position,limit等等都相同
+         */
+        CharBuffer slice = cb.slice();
+        realWriteChars(slice);
         clear(cb);
     }
 
@@ -869,6 +877,9 @@ public class OutputBuffer extends Writer {
         return max;
     }
 
+    /**
+     * 将指定的char数组写入到指定的CharByteBuffer中
+     */
     private int transfer(char[] buf, int off, int len, CharBuffer to) {
         toWriteMode(to);
         int max = Math.min(len, to.remaining());
@@ -879,6 +890,9 @@ public class OutputBuffer extends Writer {
         return max;
     }
 
+    /**
+     * 将字符串写入到指定CharByteBuffer中
+     */
     private int transfer(String s, int off, int len, CharBuffer to) {
         toWriteMode(to);
         int max = Math.min(len, to.remaining());
@@ -909,11 +923,19 @@ public class OutputBuffer extends Writer {
         return buffer.limit() == buffer.capacity();
     }
 
+    /**
+     * 将目标Buffer切换成读模式
+     * @param buffer
+     */
     private void toReadMode(Buffer buffer) {
         buffer.limit(buffer.position())
               .reset();
     }
 
+    /**
+     * 奖目标Buffer切换成写模式
+     * @param buffer
+     */
     private void toWriteMode(Buffer buffer) {
         buffer.mark()
               .position(buffer.limit())

@@ -1209,6 +1209,10 @@ public class NioEndpoint extends AbstractJsseEndpoint<NioChannel> {
 
         public void updateLastWrite() { lastWrite = System.currentTimeMillis(); }
         public long getLastWrite() { return lastWrite; }
+
+        /**
+         * 更新最近一次读取SocketChannel数据的时间戳
+         */
         public void updateLastRead() { lastRead = System.currentTimeMillis(); }
         public long getLastRead() { return lastRead; }
 
@@ -1257,10 +1261,15 @@ public class NioEndpoint extends AbstractJsseEndpoint<NioChannel> {
         }
 
 
+        /**
+         * 如果SocketWrapperBase中有数据的话则读取,
+         * 没有的话则是从SocketChannel缓冲区读取
+         */
         @Override
         public int read(boolean block, ByteBuffer to) throws IOException {
+
             int nRead = populateReadBuffer(to);
-            if (nRead > 0) {
+            if (nRead > 0) {  // 说明readBuffer中有数据,直接返回
                 return nRead;
                 /*
                  * Since more bytes may have arrived since the buffer was last
@@ -1273,14 +1282,18 @@ public class NioEndpoint extends AbstractJsseEndpoint<NioChannel> {
 
             // The socket read buffer capacity is socket.appReadBufSize
             int limit = socketBufferHandler.getReadBuffer().capacity();
+            //如果指定目标的缓冲区足以大于readBuffer的容量,则直接读取到该目标,
+            //不在经过 readBuffer复制,减少了一次拷贝的次数
             if (to.remaining() >= limit) {
                 to.limit(to.position() + limit);
                 nRead = fillReadBuffer(block, to);
                 if (log.isDebugEnabled()) {
                     log.debug("Socket: [" + this + "], Read direct from socket: [" + nRead + "]");
                 }
-                updateLastRead();//更新最后一次读取的时间
+                updateLastRead();
             } else {
+                // 只能先将SocketChannel的数据拷贝到readBuffer中,在从readBuffer中拷贝到目标对象中(to)
+                // 多一次数据的拷贝
                 // Fill the read buffer as best we can.
                 nRead = fillReadBuffer(block);
                 if (log.isDebugEnabled()) {
@@ -1315,7 +1328,13 @@ public class NioEndpoint extends AbstractJsseEndpoint<NioChannel> {
             return fillReadBuffer(block, socketBufferHandler.getReadBuffer());
         }
 
-
+        /**
+         * 从SocketChannel缓冲区读取数据到指定的ByteBuffer
+         * @param block
+         * @param to
+         * @return
+         * @throws IOException
+         */
         private int fillReadBuffer(boolean block, ByteBuffer to) throws IOException {
             int nRead;
             NioChannel channel = getSocket();
@@ -1677,6 +1696,7 @@ public class NioEndpoint extends AbstractJsseEndpoint<NioChannel> {
                     if (event == null) {
                         state = getHandler().process(socketWrapper, SocketEvent.OPEN_READ);
                     } else {
+                        // 重点执行此处
                         state = getHandler().process(socketWrapper, event);
                     }
                     if (state == SocketState.CLOSED) {

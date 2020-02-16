@@ -223,13 +223,20 @@ public class CoyoteWriter extends PrintWriter {
         write(String.valueOf(d));
     }
 
-
+    /**
+     * 数据写入到CharByteBuffer中
+     * @param s
+     */
     @Override
     public void print(char s[]) {
         write(s);
     }
 
 
+    /**
+     * 数据写入到CharByteBuffer中
+     * @param s
+     */
     @Override
     public void print(String s) {
         if (s == null) {

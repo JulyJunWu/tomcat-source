@@ -331,7 +331,11 @@ public abstract class SocketWrapperBase<E> {
         return remaining;
     }
 
-
+    /**
+     * 读取readBuffer缓冲区数据到目标缓冲区to
+     * @param to
+     * @return
+     */
     protected int populateReadBuffer(ByteBuffer to) {
         // Is there enough data in the read buffer to satisfy this request?
         // Copy what data there is in the read buffer to the byte array
@@ -1419,6 +1423,11 @@ public abstract class SocketWrapperBase<E> {
         return max;
     }
 
+    /**
+     * 一次数据拷贝
+     * 从指定的源头复制到指定的目的
+     * @return
+     */
     protected static int transfer(ByteBuffer from, ByteBuffer to) {
         int max = Math.min(from.remaining(), to.remaining());
         if (max > 0) {
