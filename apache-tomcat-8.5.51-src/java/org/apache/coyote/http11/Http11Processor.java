@@ -1210,9 +1210,10 @@ public class Http11Processor extends AbstractProcessor {
         }
 
         // Build the response header
-        try {
+        try {// 写入 协议 + 响应状态码 到缓冲区
             outputBuffer.sendStatus();
 
+            //2.响应头数据写入 缓冲区
             int size = headers.size();
             for (int i = 0; i < size; i++) {
                 outputBuffer.sendHeader(headers.getName(i), headers.getValue(i));
@@ -1225,7 +1226,7 @@ public class Http11Processor extends AbstractProcessor {
             outputBuffer.resetHeaderBuffer();
             throw t;
         }
-
+        // 数据写入完成,设置commit为true
         outputBuffer.commit();
     }
 

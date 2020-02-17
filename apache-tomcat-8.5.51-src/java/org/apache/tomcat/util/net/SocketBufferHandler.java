@@ -30,7 +30,9 @@ public class SocketBufferHandler {
 
     private volatile boolean writeBufferConfiguredForWrite = true;
     /**
-     * 往客户端写数据的
+     * 往socketChannel写数据的
+     *
+     * 最终所有的数据都是写到这边,在从这边写到socketChannel通道
      */
     private volatile ByteBuffer writeBuffer;
 

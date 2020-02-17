@@ -32,4 +32,14 @@
         <welcome-file>hello.html</welcome-file>
     </welcome-file-list>
     -->
+
+    <servlet>
+        <servlet-name>custom</servlet-name>
+        <servlet-class>com.ws.CustomServlet</servlet-class>
+    </servlet>
+
+    <servlet-mapping>
+        <servlet-name>custom</servlet-name>
+        <url-pattern>/custom</url-pattern>
+    </servlet-mapping>
 </web-app>

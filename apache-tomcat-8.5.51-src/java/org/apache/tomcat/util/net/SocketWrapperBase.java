@@ -50,7 +50,7 @@ public abstract class SocketWrapperBase<E> {
     private volatile long writeTimeout = -1;
     /**
      * 连接最大请求次数
-     * 超过了之后该连接就会断开??
+     * 超过之后该连接就会断开??
      */
     private volatile int keepAliveLeft = 100;
     private volatile boolean upgraded = false;
@@ -696,7 +696,7 @@ public abstract class SocketWrapperBase<E> {
      * @param block Should the write be blocking or not?
      *
      * @throws IOException If an I/O error such as a timeout occurs during the
-     *                     write
+     *                     write  往socketChannel写数据
      */
     protected void doWrite(boolean block) throws IOException {
         socketBufferHandler.configureWriteBufferForRead();

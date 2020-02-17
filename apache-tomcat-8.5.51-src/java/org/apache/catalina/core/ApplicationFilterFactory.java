@@ -49,6 +49,8 @@ public final class ApplicationFilterFactory {
      *
      * @return The configured FilterChain instance or null if none is to be
      *         executed.
+     *
+     *   构建FilterChain
      */
     public static ApplicationFilterChain createFilterChain(ServletRequest request,
             Wrapper wrapper, Servlet servlet) {

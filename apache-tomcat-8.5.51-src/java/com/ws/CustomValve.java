@@ -19,7 +19,6 @@ public class CustomValve extends ValveBase {
     private int number;
 
     public CustomValve(){
-        System.out.println("自定义阀门实例化");
     }
 
     @Override
@@ -28,10 +27,7 @@ public class CustomValve extends ValveBase {
         if (session != null){
             Object attribute = session.getAttribute("JSESSIONID");
         }
-        String parameter = request.getParameter("jsessionid");
-        System.out.println("自定义阀门start");
         getNext().invoke(request,response);
-        System.out.println("自定义阀门end");
     }
 
     public void setName(String name) {

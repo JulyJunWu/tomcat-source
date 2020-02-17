@@ -376,6 +376,7 @@ public class CoyoteAdapter implements Adapter {
                 }
             } else {
                 request.finishRequest();
+                // 写入响应数据 ,设置commit标识, 关闭该响应
                 response.finishResponse();
             }
 

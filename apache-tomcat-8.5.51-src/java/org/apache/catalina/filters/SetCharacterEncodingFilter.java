@@ -101,6 +101,7 @@ public class SetCharacterEncodingFilter extends FilterBase {
         if (ignore || (request.getCharacterEncoding() == null)) {
             String characterEncoding = selectEncoding(request);
             if (characterEncoding != null) {
+                //同时设置解析URL和body的编码
                 request.setCharacterEncoding(characterEncoding);
             }
         }

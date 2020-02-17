@@ -236,6 +236,10 @@ public class OutputBuffer extends Writer {
      * the response has not been committed yet.
      *
      * @throws IOException An underlying IOException occurred
+     *  1.已关闭直接返回
+     *  2.将CharByteBuffer数据写入ByteBuffer
+     *  3.设置响应头长度
+     *  4.将ByteBuffer数据写入SocketWrapperBase中的outputBuffer
      */
     @Override
     public void close() throws IOException {
@@ -836,6 +840,10 @@ public class OutputBuffer extends Writer {
         }
     }
 
+    /**
+     * 将自身ByteBuffer数据(bb)写入到SocketWrapperBase中
+     * @throws IOException
+     */
     private void flushByteBuffer() throws IOException {
         realWriteBytes(bb.slice());
         clear(bb);

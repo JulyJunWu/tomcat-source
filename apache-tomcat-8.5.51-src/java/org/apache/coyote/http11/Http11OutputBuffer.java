@@ -336,16 +336,21 @@ public class Http11OutputBuffer implements HttpOutputBuffer {
      * Commit the response.
      *
      * @throws IOException an underlying I/O error occurred
+     *
+     * 1.设置commit为true,表示该响应已写入完成,不再接收写入操作;
+     * 2.将数据写入SocketWrapperBase
      */
     protected void commit() throws IOException {
         response.setCommitted(true);
 
         if (headerBuffer.position() > 0) {
             // Sending the response header buffer
+            //切换读写模式
             headerBuffer.flip();
             try {
                 socketWrapper.write(isBlocking(), headerBuffer);
             } finally {
+                //重置position和 limit
                 headerBuffer.position(0).limit(headerBuffer.capacity());
             }
         }
