@@ -125,6 +125,7 @@ public class Catalina {
 
     /**
      * Prevent duplicate loads.
+     * 是否已经加载的标记
      */
     protected boolean loaded = false;
 
@@ -536,14 +537,15 @@ public class Catalina {
         loaded = true;
 
         long t1 = System.nanoTime();
-
+        //验证临时目录
         initDirs();
 
         // Before digester - it may be needed
+        // 初始化命名,暂时还不理解
         initNaming();
 
         // Create and execute our Digester
-        //创建破壳器,就是用来解析server.xml
+        //创建解析,就是用来解析server.xml
         Digester digester = createStartDigester();
 
         InputSource inputSource = null;
@@ -637,6 +639,7 @@ public class Catalina {
 
         // Start the new server
         try {
+            // Server 初始化
             getServer().init();
         } catch (LifecycleException e) {
             if (Boolean.getBoolean("org.apache.catalina.startup.EXIT_ON_INIT_FAILURE")) {
@@ -645,7 +648,7 @@ public class Catalina {
                 log.error("Catalina.start", e);
             }
         }
-
+        // 打印初始化消耗的时间
         long t2 = System.nanoTime();
         if(log.isInfoEnabled()) {
             log.info("Initialization processed in " + ((t2 - t1) / 1000000) + " ms");
@@ -684,7 +687,7 @@ public class Catalina {
 
         long t1 = System.nanoTime();
 
-        // Start the new server
+        // Start the new server  启动Server服务
         try {
             getServer().start();
         } catch (LifecycleException e) {
@@ -696,7 +699,7 @@ public class Catalina {
             }
             return;
         }
-
+        // 打印启动花费时间
         long t2 = System.nanoTime();
         if(log.isInfoEnabled()) {
             log.info("Server startup in " + ((t2 - t1) / 1000000) + " ms");
@@ -793,9 +796,14 @@ public class Catalina {
     }
 
 
+    /**
+     * 验证是否存在临时目录
+     */
     protected void initDirs() {
+        //临时目录,根据平台不同,路径也不同
         String temp = System.getProperty("java.io.tmpdir");
         if (temp == null || (!(new File(temp)).isDirectory())) {
+            // 没有临时目录则打印错误日志
             log.error(sm.getString("embedded.notmp", temp));
         }
     }

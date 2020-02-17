@@ -151,6 +151,8 @@ public class StandardWrapper extends ContainerBase
     /**
      * The initialization parameters for this servlet, keyed by
      * parameter name.
+     *
+     * 保存 init-param 参数 , 参考web.xml中例子
      */
     protected HashMap<String, String> parameters = new HashMap<>();
 

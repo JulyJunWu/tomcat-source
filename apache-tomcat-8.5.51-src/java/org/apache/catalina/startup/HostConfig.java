@@ -413,18 +413,18 @@ public class HostConfig implements LifecycleListener {
 
     /**
      * Deploy applications for any directories or WAR files that are found
-     * in our "application root" directory.
+     * in our "application root" directory.  重点::: 开始部署项目
      */
     protected void deployApps() {
-
+        // webapp目录
         File appBase = host.getAppBaseFile();
         File configBase = host.getConfigBaseFile();
         String[] filteredAppPaths = filterAppPaths(appBase.list());
-        // Deploy XML descriptors from configBase
+        // Deploy XML descriptors from configBase  部署xml形式的
         deployDescriptors(configBase, configBase.list());
-        // Deploy WARs
+        // Deploy WARs  // 部署war包形式的
         deployWARs(appBase, filteredAppPaths);
-        // Deploy expanded folders
+        // Deploy expanded folders  部署目录形式
         deployDirectories(appBase, filteredAppPaths);
 
     }
@@ -435,7 +435,7 @@ public class HostConfig implements LifecycleListener {
      * the regular expression defined by {@link Host#getDeployIgnore()}.
      *
      * @param unfilteredAppPaths    The list of application paths to filter
-     *
+     *  对webapp路径下对的项目进行过滤筛选
      * @return  The filtered list of application paths
      */
     protected String[] filterAppPaths(String[] unfilteredAppPaths) {
@@ -500,7 +500,7 @@ public class HostConfig implements LifecycleListener {
 
 
     /**
-     * Deploy XML context descriptors.
+     * Deploy XML context descriptors. 部署xml形式的项目
      * @param configBase The config base
      * @param files The XML descriptors which should be deployed
      */
@@ -695,7 +695,7 @@ public class HostConfig implements LifecycleListener {
     /**
      * Deploy WAR files.
      * @param appBase The base path for applications
-     * @param files The WARs to deploy
+     * @param files The WARs to deploy  部署war包形式项目
      */
     protected void deployWARs(File appBase, String[] files) {
 
@@ -711,7 +711,7 @@ public class HostConfig implements LifecycleListener {
                 continue;
             if (files[i].equalsIgnoreCase("WEB-INF"))
                 continue;
-            File war = new File(appBase, files[i]);
+            File war = new File(appBase, files[i]); // 验证是否是.war后缀的文件
             if (files[i].toLowerCase(Locale.ENGLISH).endsWith(".war") &&
                     war.isFile() && !invalidWars.contains(files[i]) ) {
 
@@ -1017,7 +1017,7 @@ public class HostConfig implements LifecycleListener {
 
         if (files == null)
             return;
-
+        // 获取host容器中的线程池
         ExecutorService es = host.getStartStopExecutor();
         List<Future<?>> results = new ArrayList<>();
 
@@ -1033,7 +1033,7 @@ public class HostConfig implements LifecycleListener {
 
                 if (isServiced(cn.getName()) || deploymentExists(cn.getName()))
                     continue;
-
+                // 提交到线程池去构建context
                 results.add(es.submit(new DeployDirectory(this, cn, dir)));
             }
         }
@@ -1050,7 +1050,7 @@ public class HostConfig implements LifecycleListener {
 
 
     /**
-     * Deploy exploded webapp.
+     * Deploy exploded webapp.  部署目录的context
      * @param cn The context name
      * @param dir The path to the root folder of the weapp
      */
@@ -1064,7 +1064,7 @@ public class HostConfig implements LifecycleListener {
             log.info(sm.getString("hostConfig.deployDir",
                     dir.getAbsolutePath()));
         }
-
+        // 指定context的文件是在需要构建的目录下的META-INF/context.xml
         Context context = null;
         File xml = new File(dir, Constants.ApplicationContextXml);
         File xmlCopy =
@@ -1078,7 +1078,7 @@ public class HostConfig implements LifecycleListener {
         try {
             if (deployThisXML && xml.exists()) {
                 synchronized (digesterLock) {
-                    try {
+                    try {// 解析context.xml
                         context = (Context) digester.parse(xml);
                     } catch (Exception e) {
                         log.error(sm.getString(
@@ -1117,12 +1117,12 @@ public class HostConfig implements LifecycleListener {
             Class<?> clazz = Class.forName(host.getConfigClass());
             LifecycleListener listener = (LifecycleListener) clazz.getConstructor().newInstance();
             context.addLifecycleListener(listener);
-
-            context.setName(cn.getName());
+            //设置context名称,路径
             context.setPath(cn.getPath());
+            context.setName(cn.getName());
             context.setWebappVersion(cn.getVersion());
             context.setDocBase(cn.getBaseName());
-            host.addChild(context);
+            host.addChild(context); //将context添加到Host容器中
         } catch (Throwable t) {
             ExceptionUtils.handleThrowable(t);
             log.error(sm.getString("hostConfig.deployDir.error",
@@ -1563,7 +1563,7 @@ public class HostConfig implements LifecycleListener {
             host.setDeployOnStartup(false);
             host.setAutoDeploy(false);
         }
-
+        // 重点:::部署项目了
         if (host.getDeployOnStartup())
             deployApps();
 
@@ -1841,12 +1841,12 @@ public class HostConfig implements LifecycleListener {
             config.deployWAR(cn, war);
         }
     }
-
+    // 用来加载Context
     private static class DeployDirectory implements Runnable {
 
         private HostConfig config;
-        private ContextName cn;
-        private File dir;
+        private ContextName cn;  // context名称
+        private File dir;        // context路径
 
         public DeployDirectory(HostConfig config, ContextName cn, File dir) {
             this.config = config;

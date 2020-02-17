@@ -826,6 +826,7 @@ public class StandardHost extends ContainerBase implements Host {
                         break;
                     }
                 }
+                //添加配置中的阀门到Pipeline中
                 if(!found) {
                     Valve valve =
                         (Valve) Class.forName(errorValve).getConstructor().newInstance();

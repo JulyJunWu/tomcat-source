@@ -712,6 +712,7 @@ public class CoyoteAdapter implements Adapter {
             // If there is no context at this point, either this is a 404
             // because no ROOT context has been deployed or the URI was invalid
             // so no context could be mapped.
+            // 没有上下文,说明根本不存在这样的资源,直接404
             if (request.getContext() == null) {
                 // Don't overwrite an existing error
                 if (!response.isError()) {

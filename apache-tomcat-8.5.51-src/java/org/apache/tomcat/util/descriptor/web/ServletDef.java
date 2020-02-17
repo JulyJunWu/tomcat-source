@@ -172,6 +172,7 @@ public class ServletDef implements Serializable {
 
     /**
      * The load-on-startup order for this servlet
+     * Servlet的加载顺序, 数字越少越前
      */
     private Integer loadOnStartup = null;
 

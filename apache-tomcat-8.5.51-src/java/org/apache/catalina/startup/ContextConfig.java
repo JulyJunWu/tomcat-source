@@ -442,7 +442,7 @@ public class ContextConfig implements LifecycleListener {
 
 
     /**
-     * Process the default configuration file, if it exists.
+     * Process the default configuration file, if it exists.  解析context.xml配置,解析的顺序 conf/context.xml -> conf/Catalina/localhost/default -> META-INF/context.xml ,后面的属性会覆盖前面解析的
      * @param digester The digester that will be used for XML parsing
      */
     protected void contextConfig(Digester digester) {
@@ -461,7 +461,7 @@ public class ContextConfig implements LifecycleListener {
         if (!context.getOverride()) {
             File defaultContextFile = new File(defaultContextXml);
             if (!defaultContextFile.isAbsolute()) {
-                defaultContextFile =
+                defaultContextFile = // 直接读取conf/context.xml
                         new File(context.getCatalinaBase(), defaultContextXml);
             }
             if (defaultContextFile.exists()) {
@@ -727,7 +727,7 @@ public class ContextConfig implements LifecycleListener {
      */
     protected synchronized void init() {
         // Called from StandardContext.init()
-
+        //解析context????
         Digester contextDigester = createContextDigester();
         contextDigester.getParser();
 

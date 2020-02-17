@@ -32,6 +32,7 @@ import org.apache.tomcat.util.res.StringManager;
 
 /**
  * Logs version information on startup.
+ * 一个日志监听器,主要的工作就是在初始化前打印日志
  */
 public class VersionLoggerListener implements LifecycleListener {
 

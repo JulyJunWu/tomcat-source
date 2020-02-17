@@ -211,7 +211,7 @@ public class NioEndpoint extends AbstractJsseEndpoint<NioChannel> {
     // ----------------------------------------------- Public Lifecycle Methods
 
     /**
-     * Initialize the endpoint.
+     * Initialize the endpoint. 开启监听端口8080,用的是NIO,但是用的是阻塞模式
      */
     @Override
     public void bind() throws Exception {
@@ -244,9 +244,10 @@ public class NioEndpoint extends AbstractJsseEndpoint<NioChannel> {
             //minimum one poller thread
             pollerThreadCount = 1;
         }
+        //设置同步服务关闭,主要是理解CountDownLatch的作用即可
         setStopLatch(new CountDownLatch(pollerThreadCount));
 
-        // Initialize SSL if needed
+        // Initialize SSL if needed 是否使用https???
         initialiseSsl();
 
         selectorPool.open();

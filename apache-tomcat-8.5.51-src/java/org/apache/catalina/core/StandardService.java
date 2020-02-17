@@ -416,7 +416,7 @@ public class StandardService extends LifecycleMBeanBase implements Service {
             log.info(sm.getString("standardService.start.name", this.name));
         setState(LifecycleState.STARTING);
 
-        // Start our defined Container first
+        // Start our defined Container first  Engine启动
         if (engine != null) {
             synchronized (engine) {
                 engine.start();

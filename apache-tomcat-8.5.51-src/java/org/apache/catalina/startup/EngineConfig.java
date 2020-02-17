@@ -75,7 +75,7 @@ public class EngineConfig
             return;
         }
 
-        // Process the event that has occurred
+        // Process the event that has occurred  此配置只有在启动和关闭的事件才有所作为
         if (event.getType().equals(Lifecycle.START_EVENT))
             start();
         else if (event.getType().equals(Lifecycle.STOP_EVENT))

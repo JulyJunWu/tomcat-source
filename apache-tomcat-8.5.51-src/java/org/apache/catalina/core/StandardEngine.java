@@ -231,7 +231,10 @@ public class StandardEngine extends ContainerBase implements Engine {
 
     }
 
-
+    /**
+     * 可以看到,在engine的init中并没有启动它的子容器,那么子容器可能就在catalina.start中???
+     * @throws LifecycleException
+     */
     @Override
     protected void initInternal() throws LifecycleException {
         // Ensure that a Realm is present before any attempt is made to start

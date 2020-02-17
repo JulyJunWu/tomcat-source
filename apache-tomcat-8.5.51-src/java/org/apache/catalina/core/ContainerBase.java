@@ -280,7 +280,7 @@ public abstract class ContainerBase extends LifecycleMBeanBase
      */
     private int startStopThreads = 1;
     /**
-     * 该线程池是用来执行 开停事件????
+     * 该线程池是用来执行 子容器的启动和关闭
      */
     protected ThreadPoolExecutor startStopExecutor;
 
@@ -746,7 +746,7 @@ public abstract class ContainerBase extends LifecycleMBeanBase
             if ((getState().isAvailable() ||
                     LifecycleState.STARTING_PREP.equals(getState())) &&
                     startChildren) {
-                child.start();
+                child.start(); //启动子容器
             }
         } catch (LifecycleException e) {
             log.error("ContainerBase.addChild: start: ", e);
@@ -896,6 +896,7 @@ public abstract class ContainerBase extends LifecycleMBeanBase
                 getStartStopThreadsInternal(), 10, TimeUnit.SECONDS,
                 startStopQueue,
                 new StartStopThreadFactory(getName() + "-startStop-"));
+        //允许核心线程销毁, 看这线程池的属性,这个线程池应该只是短暂使用,甚至只是启动和关闭的时候通过多线程开启或关闭子容器??
         startStopExecutor.allowCoreThreadTimeOut(true);
         super.initInternal();
     }
@@ -926,12 +927,13 @@ public abstract class ContainerBase extends LifecycleMBeanBase
         // Start our child containers, if any
         Container children[] = findChildren();
         List<Future<Void>> results = new ArrayList<>();
+        //将子容器的启动丢到线程池中
         for (int i = 0; i < children.length; i++) {
             results.add(startStopExecutor.submit(new StartChild(children[i])));
         }
 
         MultiThrowable multiThrowable = null;
-
+        //等待子容器启动成功,裁继续执行下去
         for (Future<Void> result : results) {
             try {
                 result.get();
@@ -1278,7 +1280,7 @@ public abstract class ContainerBase extends LifecycleMBeanBase
 
     /**
      * Start the background thread that will periodically check for
-     * session timeouts.
+     * session timeouts. 启动一个后台线程,用来检查session过期 , 目前只看到在Host容器中有启动
      */
     protected void threadStart() {
 
@@ -1350,7 +1352,7 @@ public abstract class ContainerBase extends LifecycleMBeanBase
                     Thread.currentThread().getName());
             try {
                 while (!threadDone) {
-                    try {
+                    try {// 10秒一次
                         Thread.sleep(backgroundProcessorDelay * 1000L);
                     } catch (InterruptedException e) {
                         // Ignore

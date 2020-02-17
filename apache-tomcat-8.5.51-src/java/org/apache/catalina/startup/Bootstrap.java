@@ -303,6 +303,7 @@ public final class Bootstrap {
         if (log.isDebugEnabled()) {
             log.debug("Calling startup class " + method);
         }
+        // 反射执行Catalina的load函数
         method.invoke(catalinaDaemon, param);
     }
 
@@ -472,6 +473,7 @@ public final class Bootstrap {
                 args[args.length - 1] = "stop";
                 daemon.stop();
             } else if (command.equals("start")) {
+                // 其实就是设置是否一个关闭程序的Socket标记
                 daemon.setAwait(true);
                 daemon.load(args);
                 daemon.start();
