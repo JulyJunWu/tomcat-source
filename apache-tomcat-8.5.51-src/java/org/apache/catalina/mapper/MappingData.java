@@ -27,6 +27,8 @@ import org.apache.tomcat.util.buf.MessageBytes;
  * Mapping data.
  *
  * @author Remy Maucherat
+ *
+ * 保留请求对应的容器信息
  */
 public class MappingData {
 

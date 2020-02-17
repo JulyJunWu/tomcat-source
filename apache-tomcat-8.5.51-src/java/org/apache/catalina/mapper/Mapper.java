@@ -71,6 +71,7 @@ public final class Mapper {
     /**
      * Mapping from Context object to Context version to support
      * RequestDispatcher mappings.
+     * 存放所有的context以及对应的版本
      */
     private final Map<Context, ContextVersion> contextObjectToContextVersionMap =
             new ConcurrentHashMap<>();
@@ -728,11 +729,12 @@ public final class Mapper {
     /**
      * Map the specified URI.
      * @throws IOException
+     * 根据请求的URI设置对应的容器(host/context/wrapper)
      */
     @SuppressWarnings("deprecation") // contextPath
     private final void internalMap(CharChunk host, CharChunk uri,
             String version, MappingData mappingData) throws IOException {
-
+            // 如果不为null,那么出问题,抛异常 , 因为在请求结束后,这些资源都将会被回收,重置
         if (mappingData.host != null) {
             // The legacy code (dating down at least to Tomcat 4.1) just
             // skipped all mapping work in this case. That behaviour has a risk
@@ -765,6 +767,7 @@ public final class Mapper {
                 }
             }
         }
+        // 设置请求对应的host
         mappingData.host = mappedHost.object;
 
         if (uri.isNull()) {
@@ -819,7 +822,7 @@ public final class Mapper {
         if (context == null) {
             return;
         }
-
+        // 设置请求对应的context名称 , 一般是webapp下的目录名称,如果是ROOT目录,则是空串
         mappingData.contextPath.setString(context.name);
 
         ContextVersion contextVersion = null;
@@ -830,6 +833,7 @@ public final class Mapper {
             for (int i = 0; i < contextObjects.length; i++) {
                 contextObjects[i] = contextVersions[i].object;
             }
+            // 设置请求对应context数组 , 这边会有多个的原因,大概是因为会reload的原因???
             mappingData.contexts = contextObjects;
             if (version != null) {
                 contextVersion = exactFind(contextVersions, version);
@@ -838,12 +842,15 @@ public final class Mapper {
         if (contextVersion == null) {
             // Return the latest version
             // The versions array is known to contain at least one element
+            // 设置一个最新的版本
             contextVersion = contextVersions[versionCount - 1];
         }
+        // 设置真正的请求对应context对象
         mappingData.context = contextVersion.object;
         mappingData.contextSlashCount = contextVersion.slashCount;
 
         // Wrapper mapping
+        // 寻找对应的Servlet容器
         if (!contextVersion.isPaused()) {
             internalMapWrapper(contextVersion, uri, mappingData);
         }
@@ -855,6 +862,7 @@ public final class Mapper {
      * Wrapper mapping.
      * @throws IOException if the buffers are too small to hold the results of
      *                     the mapping.
+     *   匹配合适的Servlet容器,没有则使用默认DefaultServlet容器
      */
     private final void internalMapWrapper(ContextVersion contextVersion,
                                           CharChunk path,
@@ -871,11 +879,11 @@ public final class Mapper {
         int servletPath = pathOffset + length;
         path.setOffset(servletPath);
 
-        // Rule 1 -- Exact Match
+        // Rule 1 -- Exact Match  匹配规则1: 准确匹配/全匹配 ???
         MappedWrapper[] exactWrappers = contextVersion.exactWrappers;
         internalMapExactWrapper(exactWrappers, path, mappingData);
 
-        // Rule 2 -- Prefix Match
+        // Rule 2 -- Prefix Match : 规则2 : 前缀匹配(通配符??)
         boolean checkJspWelcomeFiles = false;
         MappedWrapper[] wildcardWrappers = contextVersion.wildcardWrappers;
         if (mappingData.wrapper == null) {
@@ -914,14 +922,14 @@ public final class Mapper {
             return;
         }
 
-        // Rule 3 -- Extension Match
+        // Rule 3 -- Extension Match  规则3 : 格式匹配???
         MappedWrapper[] extensionWrappers = contextVersion.extensionWrappers;
         if (mappingData.wrapper == null && !checkJspWelcomeFiles) {
             internalMapExtensionWrapper(extensionWrappers, path, mappingData,
                     true);
         }
 
-        // Rule 4 -- Welcome resources processing for servlets
+        // Rule 4 -- Welcome resources processing for servlets : 规则4 : 欢迎页面匹配
         if (mappingData.wrapper == null) {
             boolean checkWelcomeFiles = checkJspWelcomeFiles;
             if (!checkWelcomeFiles) {
@@ -1011,7 +1019,7 @@ public final class Mapper {
         }
 
 
-        // Rule 7 -- Default servlet
+        // Rule 7 -- Default servlet   规则7 : 以上都没有匹配到,使用默认的Servlet
         if (mappingData.wrapper == null && !checkJspWelcomeFiles) {
             if (contextVersion.defaultWrapper != null) {
                 mappingData.wrapper = contextVersion.defaultWrapper.object;

@@ -27,4 +27,9 @@
      Welcome to Tomcat
   </description>
 
+    <!--配置默认欢迎界面
+    <welcome-file-list>
+        <welcome-file>hello.html</welcome-file>
+    </welcome-file-list>
+    -->
 </web-app>

@@ -80,12 +80,6 @@ public class ErrorReportValve extends ValveBase {
 
         // Perform the request
         getNext().invoke(request, response);
-        if (!response.isCommitted()){
-            //测试使用,需删除
-            PrintWriter writer = response.getWriter();
-            writer.print("I will coming");
-            writer.flush();
-        }
         if (response.isCommitted()) {
             if (response.setErrorReported()) {
                 // Error wasn't previously reported but we can't write an error

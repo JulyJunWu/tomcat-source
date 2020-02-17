@@ -26,4 +26,8 @@
   <description>
      Tomcat Documentation.
   </description>
+
+    <welcome-file-list>
+        <welcome-file>api/index.html</welcome-file>
+    </welcome-file-list>
 </web-app>

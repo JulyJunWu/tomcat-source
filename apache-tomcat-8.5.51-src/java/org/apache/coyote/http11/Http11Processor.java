@@ -146,6 +146,7 @@ public class Http11Processor extends AbstractProcessor {
 
     /**
      * Maximum number of Keep-Alive requests to honor.
+     * 一个连接的存活时间内最大可以请求多少次
      */
     protected int maxKeepAliveRequests = -1;
 
@@ -484,7 +485,8 @@ public class Http11Processor extends AbstractProcessor {
     public SocketState service(SocketWrapperBase<?> socketWrapper)
         throws IOException {
         RequestInfo rp = request.getRequestProcessor();
-        rp.setStage(org.apache.coyote.Constants.STAGE_PARSE); // 设置当前请求处理阶段为 解析阶段
+        // 设置当前请求处理阶段为 解析阶段
+        rp.setStage(org.apache.coyote.Constants.STAGE_PARSE);
 
         // Setting up the I/O
         setSocketWrapper(socketWrapper);
@@ -508,7 +510,7 @@ public class Http11Processor extends AbstractProcessor {
                         break;
                     }
                 }
-
+                // 是否暂停/停顿
                 if (endpoint.isPaused()) {
                     // 503 - Service unavailable
                     response.setStatus(503);
@@ -517,7 +519,8 @@ public class Http11Processor extends AbstractProcessor {
                     keptAlive = true;
                     // Set this every time in case limit has been changed via JMX
                     request.getMimeHeaders().setLimit(endpoint.getMaxHeaderCount());
-                    if (!inputBuffer.parseHeaders()) {  // 解析HTTP 请求头
+                    // 解析HTTP 请求头
+                    if (!inputBuffer.parseHeaders()) {
                         // We've read part of the request, don't recycle it
                         // instead associate it with the socket
                         openSocket = true;
@@ -583,6 +586,7 @@ public class Http11Processor extends AbstractProcessor {
 
             if (getErrorState().isIoAllowed()) {
                 // Setting up filters, and parse some request headers
+                // 设置请求为准备阶段
                 rp.setStage(org.apache.coyote.Constants.STAGE_PREPARE);
                 try {
                     prepareRequest();
@@ -607,6 +611,7 @@ public class Http11Processor extends AbstractProcessor {
             // Process the request in the adapter
             if (getErrorState().isIoAllowed()) {
                 try {
+                    // 设置请求就阶段为 service
                     rp.setStage(org.apache.coyote.Constants.STAGE_SERVICE);
                     // 请求的所有数据
                     ByteBuffer byteBuffer = inputBuffer.getByteBuffer();
@@ -615,7 +620,7 @@ public class Http11Processor extends AbstractProcessor {
                     String data = UDecoder.URLDecode(s, Charset.defaultCharset());
                     log.info("请求数据->" + data);
                     log.info("执行 getAdapter().service(request, response); ");
-
+                    //适配器进行服务
                     getAdapter().service(request, response);
                     // Handle when the response was committed before a serious
                     // error occurred.  Throwing a ServletException should both
@@ -785,6 +790,7 @@ public class Http11Processor extends AbstractProcessor {
         if (endpoint.isSSLEnabled()) {
             request.scheme().setString("https");
         }
+        //设置协议的字符串
         MessageBytes protocolMB = request.protocol();
         if (protocolMB.equals(Constants.HTTP_11)) {
             protocolMB.setString(Constants.HTTP_11);
@@ -808,13 +814,14 @@ public class Http11Processor extends AbstractProcessor {
                           " Unsupported HTTP version \""+protocolMB+"\"");
             }
         }
-
+        // 头部
         MimeHeaders headers = request.getMimeHeaders();
 
         // Check connection header
         MessageBytes connectionValueMB = headers.getValue(Constants.CONNECTION);
         if (connectionValueMB != null && !connectionValueMB.isNull()) {
             Set<String> tokens = new HashSet<>();
+            // 分割connection的value值 , 设置keepAlive值
             TokenList.parseTokenList(headers.values(Constants.CONNECTION), tokens);
             if (tokens.contains(Constants.CLOSE)) {
                 keepAlive = false;
@@ -824,6 +831,7 @@ public class Http11Processor extends AbstractProcessor {
         }
 
         if (http11) {
+            //请求头是否包含expect属性
             MessageBytes expectMB = headers.getValue("expect");
             if (expectMB != null && !expectMB.isNull()) {
                 if (expectMB.toString().trim().equalsIgnoreCase("100-continue")) {

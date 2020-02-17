@@ -48,7 +48,10 @@ public abstract class SocketWrapperBase<E> {
     // thread to the thread checking the timeout.
     private volatile long readTimeout = -1;
     private volatile long writeTimeout = -1;
-
+    /**
+     * 连接最大请求次数
+     * 超过了之后该连接就会断开??
+     */
     private volatile int keepAliveLeft = 100;
     private volatile boolean upgraded = false;
     private boolean secure = false;

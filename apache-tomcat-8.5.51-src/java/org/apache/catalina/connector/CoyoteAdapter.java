@@ -296,16 +296,19 @@ public class CoyoteAdapter implements Adapter {
     @Override
     public void service(org.apache.coyote.Request req, org.apache.coyote.Response res)
             throws Exception {
-
+        // 获取真正的HttpServletRequest和HttpServletRequest对象
         Request request = (Request) req.getNote(ADAPTER_NOTES);
         Response response = (Response) res.getNote(ADAPTER_NOTES);
-
+        // 不存在则创建
         if (request == null) {
             // Create objects
-            request = connector.createRequest();
-            request.setCoyoteRequest(req);
             response = connector.createResponse();
+            // 关联原生request请求到HttpServletResponse中
             response.setCoyoteResponse(res);
+
+            request = connector.createRequest();
+            //关联原生request请求到HttpServletRequest中,
+            request.setCoyoteRequest(req);
 
             // Link objects
             request.setResponse(response);
@@ -316,6 +319,8 @@ public class CoyoteAdapter implements Adapter {
             res.setNote(ADAPTER_NOTES, response);
 
             // Set query string encoding
+            //将connector的URI编码设置到 req中, 这个编码其实就是connector配置文件中 UriEncoding = "UTF-8"
+            // 用来解析URI编码的
             req.getParameters().setQueryStringCharset(connector.getURICharset());
         }
 
@@ -326,11 +331,12 @@ public class CoyoteAdapter implements Adapter {
         boolean async = false;
         boolean postParseSuccess = false;
 
+        // 设置工作线程名称
         req.getRequestProcessor().setWorkerThreadName(THREAD_NAME.get());
-
         try {
             // Parse and set Catalina and configuration specific
             // request parameters
+            // 听说此处很重要???
             postParseSuccess = postParseRequest(req, request, res, response);
             if (postParseSuccess) {
                 //check valves if we support async
@@ -573,6 +579,7 @@ public class CoyoteAdapter implements Adapter {
         // If the processor has set the scheme (AJP does this, HTTP does this if
         // SSL is enabled) use this to set the secure flag as well. If the
         // processor hasn't set it, use the settings from the connector
+        // 设置scheme , 一般是https 或者是 http
         if (req.scheme().isNull()) {
             // Use connector scheme and secure configuration, (defaults to
             // "http" and false respectively)
@@ -580,6 +587,7 @@ public class CoyoteAdapter implements Adapter {
             request.setSecure(connector.getSecure());
         } else {
             // Use processor specified scheme to determine secure state
+            //是否使用SSL,就是对应 https的请求
             request.setSecure(req.scheme().equals("https"));
         }
 
@@ -625,6 +633,7 @@ public class CoyoteAdapter implements Adapter {
 
         if (undecodedURI.getType() == MessageBytes.T_BYTES) {
             // Copy the raw URI to the decodedURI
+            // 拷贝一份到自己属性中
             decodedURI.duplicate(undecodedURI);
 
             // Parse the path parameters. This will:
@@ -635,6 +644,7 @@ public class CoyoteAdapter implements Adapter {
             // URI decoding
             // %xx decoding of the URL
             try {
+                //当请求URI中有中文的时候就会被浏览器编码成 %wewqew324ewq23424%格式,所以此处是对其进行解析
                 req.getURLDecoder().convert(decodedURI, false);
             } catch (IOException ioe) {
                 response.sendError(400, "Invalid URI: " + ioe.getMessage());
@@ -695,6 +705,7 @@ public class CoyoteAdapter implements Adapter {
 
         while (mapRequired) {
             // This will map the the latest version by default
+            // 寻找并设置请求对应的容器
             connector.getService().getMapper().map(serverName, decodedURI,
                     version, request.getMappingData());
 

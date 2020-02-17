@@ -744,6 +744,7 @@ public abstract class AbstractEndpoint<S> {
 
     /**
      * Max keep alive requests
+     * 连接最大请求
      */
     private int maxKeepAliveRequests=100; // as in Apache HTTPD server
     public int getMaxKeepAliveRequests() {

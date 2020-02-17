@@ -1065,6 +1065,10 @@ public abstract class AbstractProtocol<S> implements ProtocolHandler,
             }
         }
 
+        /**
+         * 超出缓存大小的 Processor
+         * @param processor
+         */
         protected void unregister(Processor processor) {
             if (getProtocol().getDomain() != null) {
                 synchronized (this) {
