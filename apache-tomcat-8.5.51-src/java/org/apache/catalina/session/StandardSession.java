@@ -648,6 +648,7 @@ public class StandardSession implements HttpSession, Session, Serializable {
 
     /**
      * Return the <code>isValid</code> flag for this session.
+     * session是否有效
      */
     @Override
     public boolean isValid() {

@@ -101,9 +101,11 @@ public final class ApplicationFilterFactory {
 
         // Add the relevant path-mapped filters to this filter chain
         for (int i = 0; i < filterMaps.length; i++) {
+            // 根据转发类型匹配
             if (!matchDispatcher(filterMaps[i] ,dispatcher)) {
                 continue;
             }
+            //根据URL匹配
             if (!matchFiltersURL(filterMaps[i], requestPath))
                 continue;
             ApplicationFilterConfig filterConfig = (ApplicationFilterConfig)
@@ -120,6 +122,7 @@ public final class ApplicationFilterFactory {
             if (!matchDispatcher(filterMaps[i] ,dispatcher)) {
                 continue;
             }
+            // 根据Servlet名称匹配
             if (!matchFiltersServlet(filterMaps[i], servletName))
                 continue;
             ApplicationFilterConfig filterConfig = (ApplicationFilterConfig)

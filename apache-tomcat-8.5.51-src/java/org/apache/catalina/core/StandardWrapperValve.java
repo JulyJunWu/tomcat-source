@@ -162,6 +162,7 @@ final class StandardWrapperValve
         request.setAttribute(Globals.DISPATCHER_REQUEST_PATH_ATTR,
                 requestPathMB);
         // Create the filter chain for this request
+        getContainer().getLogger().info("构建FilterChain");
         ApplicationFilterChain filterChain =
                 ApplicationFilterFactory.createFilterChain(request, wrapper, servlet);
 
@@ -189,8 +190,7 @@ final class StandardWrapperValve
                     if (request.isAsyncDispatching()) {
                         request.getAsyncContextInternal().doInternalDispatch();
                     } else {
-                        String ha = request.getParameter("ha");
-                        System.out.println("执行过滤器链 filterChain.doFilter(request.getRequest(), response.getResponse());");
+                        getContainer().getLogger().info("执行FilterChain");
                         filterChain.doFilter
                                 (request.getRequest(), response.getResponse());
                     }
@@ -251,6 +251,7 @@ final class StandardWrapperValve
         } finally {
             // Release the filter chain (if any) for this request
             if (filterChain != null) {
+                getContainer().getLogger().info("重置FilterChain");
                 filterChain.release();
             }
 

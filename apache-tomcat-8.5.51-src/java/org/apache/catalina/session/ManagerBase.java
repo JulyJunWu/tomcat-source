@@ -134,7 +134,7 @@ public abstract class ManagerBase extends LifecycleMBeanBase implements Manager 
     /**
      * The set of currently active Sessions for this Manager, keyed by
      * session identifier.
-     * 存放存错的session
+     * 存放有效session
      */
     protected Map<String, Session> sessions = new ConcurrentHashMap<>();
 
@@ -153,7 +153,7 @@ public abstract class ManagerBase extends LifecycleMBeanBase implements Manager 
 
     /**
      * Number of session creations that failed due to maxActiveSessions.
-     * 超出上限了,拒绝创建的session次数
+     * 超出上限,拒绝创建的session次数
      */
     protected int rejectedSessions = 0;
 

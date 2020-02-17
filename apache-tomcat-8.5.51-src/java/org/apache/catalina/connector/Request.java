@@ -1149,7 +1149,7 @@ public class Request implements org.apache.catalina.servlet4preview.http.HttpSer
     public String getParameter(String name) {
 
         if (!parametersParsed) {
-            // 解析URL参数
+            log.info("解析URL和body参数");
             parseParameters();
         }
 

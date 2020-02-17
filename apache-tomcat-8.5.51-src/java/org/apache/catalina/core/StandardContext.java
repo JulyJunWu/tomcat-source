@@ -392,6 +392,7 @@ public class StandardContext extends ContainerBase
      * they were defined in the deployment descriptor with additional mappings
      * added via the {@link ServletContext} possibly both before and after those
      * defined in the deployment descriptor.
+     * 存放过滤器
      */
     private final ContextFilterMaps filterMaps = new ContextFilterMaps();
 
