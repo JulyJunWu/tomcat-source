@@ -165,6 +165,7 @@ public class StandardSession implements HttpSession, Session, Serializable {
      * We are currently processing a session expiration, so bypass
      * certain IllegalStateException tests.  NOTE:  This value is not
      * included in the serialized version of this object.
+     * 是否过期标识
      */
     protected transient volatile boolean expiring = false;
 
@@ -204,6 +205,7 @@ public class StandardSession implements HttpSession, Session, Serializable {
      * The maximum time interval, in seconds, between client requests before
      * the servlet container may invalidate this session.  A negative time
      * indicates that the session should never time out.
+     * session默认的过期时间是30分钟
      */
     protected volatile int maxInactiveInterval = -1;
 

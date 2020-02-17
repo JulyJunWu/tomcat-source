@@ -72,6 +72,7 @@ public class StandardEngine extends ContainerBase implements Engine {
             log.warn(sm.getString("standardEngine.jvmRouteFail"));
         }
         // By default, the engine will hold the reloading thread
+        //设置睡眠时间(s),参数大于 0 , 表示需要开启一个后台线程
         backgroundProcessorDelay = 10;
 
     }

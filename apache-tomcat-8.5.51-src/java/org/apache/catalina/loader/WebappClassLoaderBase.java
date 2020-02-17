@@ -739,6 +739,7 @@ public abstract class WebappClassLoaderBase extends URLClassLoader
             }
         }
 
+        //检测 /WEB-INF/lib是否有新增或删除的 jar包
         // Check if JARs have been added or removed
         WebResource[] jars = resources.listResources("/WEB-INF/lib");
         // Filter out non-JAR resources

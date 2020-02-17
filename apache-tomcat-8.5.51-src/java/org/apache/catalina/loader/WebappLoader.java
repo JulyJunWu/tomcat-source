@@ -122,7 +122,7 @@ public class WebappLoader extends LifecycleMBeanBase
 
 
     /**
-     * The reloadable flag for this Loader.
+     * The reloadable flag for this Loader. 是否允许重新加载标记
      */
     private boolean reloadable = false;
 

@@ -336,21 +336,17 @@ public class CoyoteAdapter implements Adapter {
         try {
             // Parse and set Catalina and configuration specific
             // request parameters
-            // 听说此处很重要???
+            // 非常重要/ 解析一些重要属性,比如session/cookie等等
             postParseSuccess = postParseRequest(req, request, res, response);
             if (postParseSuccess) {
                 //check valves if we support async
                 request.setAsyncSupported(
                         connector.getService().getContainer().getPipeline().isAsyncSupported());
-
-                boolean committed = response.isCommitted();
                 // Calling the container 开始从容器中流通
                 log.info("开始容器中流通 connector.getService().getContainer().getPipeline().getFirst().invoke(request, response)");
                 connector.getService().getContainer().getPipeline().getFirst().invoke(
                         request, response);
                 log.info("容器流程结束");
-                committed = response.isCommitted();
-                System.out.println(committed);
             }
             if (request.isAsync()) {
                 async = true;
@@ -706,6 +702,7 @@ public class CoyoteAdapter implements Adapter {
         while (mapRequired) {
             // This will map the the latest version by default
             // 寻找并设置请求对应的容器
+            log.info("查找请求对应容器");
             connector.getService().getMapper().map(serverName, decodedURI,
                     version, request.getMappingData());
 
@@ -727,10 +724,11 @@ public class CoyoteAdapter implements Adapter {
             // Now we have the context, we can parse the session ID from the URL
             // (if any). Need to do this before we redirect in case we need to
             // include the session id in the redirect
+            log.info("解析session");
             String sessionID;
             if (request.getServletContext().getEffectiveSessionTrackingModes()
                     .contains(SessionTrackingMode.URL)) {
-
+                //,如果有的话,从URI中获取session参数
                 // Get the session ID if there was one 获取sessionId
                 sessionID = request.getPathParameter(
                         SessionConfig.getSessionUriParamName(

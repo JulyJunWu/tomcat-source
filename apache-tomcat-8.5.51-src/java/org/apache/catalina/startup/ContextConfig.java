@@ -1077,6 +1077,8 @@ public class ContextConfig implements LifecycleListener {
      * where there is duplicate configuration, the most specific level wins. ie
      * an application's web.xml takes precedence over the host level or global
      * web.xml file.
+     *
+     * 重要方法!!!!!!!
      */
     protected void webConfig() {
         /*
@@ -1104,16 +1106,19 @@ public class ContextConfig implements LifecycleListener {
          *   those in JARs excluded from an absolute ordering) need to be
          *   scanned to check if they match.
          */
+        // 构建web.xml解析器
         WebXmlParser webXmlParser = new WebXmlParser(context.getXmlNamespaceAware(),
                 context.getXmlValidation(), context.getXmlBlockExternal());
 
         Set<WebXml> defaults = new HashSet<>();
+        //解析web.xml转成 WebXml 对象 , 获取默认的web.xml配置???
         defaults.add(getDefaultWebXmlFragment(webXmlParser));
 
         WebXml webXml = createWebXml();
 
-        // Parse context level web.xml
+        // Parse context level web.xml  读取自身/META-INF/web.xml 数据流
         InputSource contextWebXml = getContextWebXmlSource();
+        // 解析数据流, 映射到WebXml实例
         if (!webXmlParser.parseWebXml(contextWebXml, webXml, false)) {
             ok = false;
         }
@@ -1125,14 +1130,14 @@ public class ContextConfig implements LifecycleListener {
         // Step 1. Identify all the JARs packaged with the application and those
         // provided by the container. If any of the application JARs have a
         // web-fragment.xml it will be parsed at this point. web-fragment.xml
-        // files are ignored for container provided JARs.
+        // files are ignored for container provided JARs. 读取JAR包中的web-fragment.xml配置????
         Map<String,WebXml> fragments = processJarsForWebFragments(webXml, webXmlParser);
 
-        // Step 2. Order the fragments.
+        // Step 2. Order the fragments. 排序
         Set<WebXml> orderedFragments = null;
         orderedFragments =
                 WebXml.orderWebFragments(webXml, fragments, sContext);
-
+        // 查找ServletContainerInitializer实现类
         // Step 3. Look for ServletContainerInitializer implementations
         if (ok) {
             processServletContainerInitializers();
@@ -1624,7 +1629,7 @@ public class ContextConfig implements LifecycleListener {
     }
 
     /**
-     * Scan JARs for ServletContainerInitializer implementations.
+     * Scan JARs for ServletContainerInitializer implementations. 重要方法 Jun
      */
     protected void processServletContainerInitializers() {
 

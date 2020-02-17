@@ -392,6 +392,7 @@ public final class StandardServer extends LifecycleMBeanBase implements Server {
      * Wait until a proper shutdown command is received, then return.
      * This keeps the main thread alive - the thread pool listening for http
      * connections is daemon threads.
+     * 监听 8005 端口 关闭服务器的命令
      */
     @Override
     public void await() {
@@ -497,7 +498,6 @@ public final class StandardServer extends LifecycleMBeanBase implements Server {
                         // Ignore
                     }
                 }
-
                 // Match against our command string
                 boolean match = command.toString().equals(shutdown);
                 if (match) {

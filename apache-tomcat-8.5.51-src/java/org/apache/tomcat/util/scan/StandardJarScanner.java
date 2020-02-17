@@ -178,7 +178,7 @@ public class StandardJarScanner implements JarScanner {
 
         Set<URL> processedURLs = new HashSet<>();
 
-        // Scan WEB-INF/lib
+        // Scan WEB-INF/lib  扫描当前项目下的WEB-INF/lib
         Set<String> dirList = context.getResourcePaths(Constants.WEB_INF_LIB);
         if (dirList != null) {
             for (String path : dirList) {
@@ -206,7 +206,7 @@ public class StandardJarScanner implements JarScanner {
         }
 
         // Scan WEB-INF/classes
-        try {
+        try { // 扫描当前目录下的/WEB-INF/classes
             URL webInfURL = context.getResource(Constants.WEB_INF_CLASSES);
             if (webInfURL != null) {
                 // WEB-INF/classes will also be included in the URLs returned

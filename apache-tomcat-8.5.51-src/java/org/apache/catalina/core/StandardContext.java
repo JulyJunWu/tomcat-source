@@ -157,7 +157,6 @@ public class StandardContext extends ContainerBase
      * Create a new StandardContext component with the default basic Valve.
      */
     public StandardContext() {
-
         super();
         pipeline.setBasic(new StandardContextValve());
         broadcaster = new NotificationBroadcasterSupport();
@@ -539,6 +538,7 @@ public class StandardContext extends ContainerBase
 
     /**
      * The session timeout (in minutes) for this web application.
+     * 默认的session过期时间
      */
     private int sessionTimeout = 30;
 
@@ -3738,6 +3738,8 @@ public class StandardContext extends ContainerBase
      *
      * @exception IllegalStateException if the <code>reloadable</code>
      *  property is set to <code>false</code>.
+     *
+     *  原理就是先 设置 暂时的标记 为true , 然后执行stop关闭容器 , 在重新启动start,最后重新标记 为 false
      */
     @Override
     public synchronized void reload() {
@@ -5152,7 +5154,7 @@ public class StandardContext extends ContainerBase
 
             // Set up the context init params
             mergeParameters();
-
+            // 调用ServletContainerInitializers接口
             // Call ServletContainerInitializers
             for (Map.Entry<ServletContainerInitializer, Set<Class<?>>> entry :
                 initializers.entrySet()) {

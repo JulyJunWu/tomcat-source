@@ -55,6 +55,8 @@ import org.apache.tomcat.util.ExceptionUtils;
  * <code>stop()</code> methods of this class at the correct times.
  *
  * @author Craig R. McClanahan
+ *
+ * Session管理器
  */
 public class StandardManager extends ManagerBase {
 
@@ -177,7 +179,7 @@ public class StandardManager extends ManagerBase {
         if (log.isDebugEnabled()) {
             log.debug("Start: Loading persisted sessions");
         }
-
+        log.info("准备从磁盘中反序列化session");
         // Initialize our internal data structures
         sessions.clear();
 
@@ -275,18 +277,20 @@ public class StandardManager extends ManagerBase {
      * returns without doing anything.
      *
      * @exception IOException if an input/output error occurs
+     * 持久化session到磁盘操作
      */
     protected void doUnload() throws IOException {
 
         if (log.isDebugEnabled())
             log.debug(sm.getString("standardManager.unloading.debug"));
-
+        //session为空不继续,不为空的话将session序列化到磁盘
         if (sessions.isEmpty()) {
             log.debug(sm.getString("standardManager.unloading.nosessions"));
             return; // nothing to do
         }
 
         // Open an output stream to the specified pathname, if any
+        // session持久化的路径
         File file = file();
         if (file == null) {
             return;
@@ -308,6 +312,7 @@ public class StandardManager extends ManagerBase {
                 }
                 // Write the number of active sessions, followed by the details
                 oos.writeObject(Integer.valueOf(sessions.size()));
+                //持久化session到磁盘下
                 for (Session s : sessions.values()) {
                     StandardSession session = (StandardSession) s;
                     list.add(session);
@@ -413,6 +418,8 @@ public class StandardManager extends ManagerBase {
      * Return a File object representing the pathname to our
      * persistence file, if any.
      * @return the file
+     *
+     *  session持久化的目录
      */
     protected File file() {
         if (pathname == null || pathname.length() == 0) {

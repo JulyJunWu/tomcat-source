@@ -147,7 +147,7 @@ public interface Lifecycle {
 
 
     /**
-     * The LifecycleEvent type for the "periodic" event.
+     * The LifecycleEvent type for the "periodic" event.  周期的事件 , 比如定时任务???
      */
     public static final String PERIODIC_EVENT = "periodic";
 

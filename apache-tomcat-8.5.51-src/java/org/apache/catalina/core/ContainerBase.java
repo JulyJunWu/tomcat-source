@@ -1280,7 +1280,7 @@ public abstract class ContainerBase extends LifecycleMBeanBase
 
     /**
      * Start the background thread that will periodically check for
-     * session timeouts. 启动一个后台线程,用来检查session过期 , 目前只看到在Host容器中有启动
+     * session timeouts. 启动一个后台线程,用来检查session过期(不仅仅) , 目前只看到在Engine容器中有启动
      */
     protected void threadStart() {
 
@@ -1358,6 +1358,7 @@ public abstract class ContainerBase extends LifecycleMBeanBase
                         // Ignore
                     }
                     if (!threadDone) {
+                        //主要逻辑
                         processChildren(ContainerBase.this);
                     }
                 }

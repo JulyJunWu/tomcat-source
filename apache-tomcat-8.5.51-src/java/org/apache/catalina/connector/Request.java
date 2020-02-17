@@ -297,6 +297,7 @@ public class Request implements org.apache.catalina.servlet4preview.http.HttpSer
     /**
      * Cookie headers parsed flag. Indicates that the cookie headers have been
      * parsed into ServerCookies.
+     * cookie是否解析的标记
      */
     protected boolean cookiesParsed = false;
 
@@ -364,7 +365,7 @@ public class Request implements org.apache.catalina.servlet4preview.http.HttpSer
 
 
     /**
-     * The requested session ID (if any) for this request.
+     * The requested session ID (if any) for this request. 请求的session
      */
     protected String requestedSessionId = null;
 
@@ -3133,7 +3134,7 @@ public class Request implements org.apache.catalina.servlet4preview.http.HttpSer
         if (cookiesParsed) {
             return;
         }
-
+        log.info("解析cookies");
         cookiesParsed = true;
 
         ServerCookies serverCookies = coyoteRequest.getCookies();

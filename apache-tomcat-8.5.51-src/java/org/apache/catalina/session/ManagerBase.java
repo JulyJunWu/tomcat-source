@@ -111,6 +111,7 @@ public abstract class ManagerBase extends LifecycleMBeanBase implements Manager 
 
     /**
      * The longest time (in seconds) that an expired session had been alive.
+     * session的过期时间
      */
     protected volatile int sessionMaxAliveTime;
     private final Object sessionMaxAliveTimeUpdateLock = new Object();
@@ -133,6 +134,7 @@ public abstract class ManagerBase extends LifecycleMBeanBase implements Manager 
     /**
      * The set of currently active Sessions for this Manager, keyed by
      * session identifier.
+     * 存放存错的session
      */
     protected Map<String, Session> sessions = new ConcurrentHashMap<>();
 
@@ -145,11 +147,13 @@ public abstract class ManagerBase extends LifecycleMBeanBase implements Manager 
 
     /**
      * The maximum number of active Sessions allowed, or -1 for no limit.
+     * 允许存活session数量限制,-1 表示不限制
      */
     protected int maxActiveSessions = -1;
 
     /**
      * Number of session creations that failed due to maxActiveSessions.
+     * 超出上限了,拒绝创建的session次数
      */
     protected int rejectedSessions = 0;
 
@@ -633,6 +637,7 @@ public abstract class ManagerBase extends LifecycleMBeanBase implements Manager 
     @Override
     public Session createSession(String sessionId) {
 
+        // 存活session达到上限
         if ((maxActiveSessions >= 0) &&
                 (getActiveSessions() >= maxActiveSessions)) {
             rejectedSessions++;
@@ -643,11 +648,12 @@ public abstract class ManagerBase extends LifecycleMBeanBase implements Manager 
 
         // Recycle or create a Session instance
         Session session = createEmptySession();
-
+        log.info("创建session");
         // Initialize the properties of the new session and return it
         session.setNew(true);
         session.setValid(true);
         session.setCreationTime(System.currentTimeMillis());
+        // 设置session的失效期限
         session.setMaxInactiveInterval(getContext().getSessionTimeout() * 60);
         String id = sessionId;
         if (id == null) {
