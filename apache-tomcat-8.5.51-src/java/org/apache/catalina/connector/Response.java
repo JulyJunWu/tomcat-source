@@ -418,6 +418,7 @@ public class Response implements HttpServletResponse {
      * Error flag accessor.
      *
      * @return <code>true</code> if the response has encountered an error
+     * 响应是否发生异常
      */
     public boolean isError() {
         return getCoyoteResponse().isError();

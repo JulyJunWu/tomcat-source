@@ -363,6 +363,10 @@ public final class Request {
         return -1;
     }
 
+    /**
+     * 获取头部属性content-length的 value值
+     * @return
+     */
     public long getContentLengthLong() {
         if( contentLength > -1 ) {
             return contentLength;

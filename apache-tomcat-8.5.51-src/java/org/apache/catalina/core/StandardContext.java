@@ -5533,13 +5533,17 @@ public class StandardContext extends ContainerBase
         super.destroyInternal();
     }
 
-
+    /**
+     * 这个是后台线程执行的
+     * 只会有一个,从Engine启动线程的,其他容器暂时未发现!
+     */
     @Override
     public void backgroundProcess() {
 
         if (!getState().isAvailable())
             return;
-
+        //类加载器,主要是用来发现是否有新增或删除的jar包
+        //最重要的还是看是否开启reload开关,默认是关闭的
         Loader loader = getLoader();
         if (loader != null) {
             try {
@@ -5549,6 +5553,7 @@ public class StandardContext extends ContainerBase
                         "standardContext.backgroundProcess.loader", loader), e);
             }
         }
+        // Session管理器,此处主要是用来清理过期session
         Manager manager = getManager();
         if (manager != null) {
             try {

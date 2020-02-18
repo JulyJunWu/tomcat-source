@@ -661,7 +661,9 @@ public abstract class AbstractEndpoint<S> {
      */
     private boolean SSLEnabled = false;
     public boolean isSSLEnabled() { return SSLEnabled; }
-    public void setSSLEnabled(boolean SSLEnabled) { this.SSLEnabled = SSLEnabled; }
+    public void setSSLEnabled(boolean SSLEnabled) {
+        this.SSLEnabled = SSLEnabled;
+    }
 
     /**
      * Identifies if the endpoint supports ALPN. Note that a return value of

@@ -984,6 +984,14 @@ public abstract class AbstractHttp11Protocol<S> extends AbstractProtocol<S> {
 
     // ------------------------------------------------------------- Common code
 
+    /**
+     * 创建Processor
+     * 非常重要的一个类
+     *  包含了读取流/ Request和 Response对象(非HttpServletRequest)
+     *  是一个可复用的对象.
+     *  使用完毕后,会加入缓存中等待下一次的复用
+     * @return
+     */
     @Override
     protected Processor createProcessor() {
         Http11Processor processor = new Http11Processor(this, getEndpoint());

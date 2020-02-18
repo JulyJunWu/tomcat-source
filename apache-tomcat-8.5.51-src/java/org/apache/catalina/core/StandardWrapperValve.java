@@ -60,7 +60,13 @@ final class StandardWrapperValve
     private volatile long processingTime;
     private volatile long maxTime;
     private volatile long minTime = Long.MAX_VALUE;
+    /**
+     *  对应的请求数量
+     */
     private final AtomicInteger requestCount = new AtomicInteger(0);
+    /**
+     *该 Wrapper对应的Servlet发生异常的次数
+     */
     private final AtomicInteger errorCount = new AtomicInteger(0);
 
 
@@ -91,6 +97,7 @@ final class StandardWrapperValve
         Throwable throwable = null;
         // This should be a Request attribute...
         long t1 = System.currentTimeMillis();
+        // 请求次数++
         requestCount.incrementAndGet();
         StandardWrapper wrapper = (StandardWrapper) getContainer();
         Servlet servlet = null;

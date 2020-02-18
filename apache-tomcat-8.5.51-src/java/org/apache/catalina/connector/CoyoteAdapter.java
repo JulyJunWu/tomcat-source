@@ -297,6 +297,7 @@ public class CoyoteAdapter implements Adapter {
     public void service(org.apache.coyote.Request req, org.apache.coyote.Response res)
             throws Exception {
         // 获取真正的HttpServletRequest和HttpServletRequest对象
+        // 如果是从缓存中获取的Request,那么含有HttpServletRequest对象的.
         Request request = (Request) req.getNote(ADAPTER_NOTES);
         Response response = (Response) res.getNote(ADAPTER_NOTES);
         // 不存在则创建
@@ -377,11 +378,12 @@ public class CoyoteAdapter implements Adapter {
             } else {
                 request.finishRequest();
                 // 写入响应数据 ,设置commit标识, 关闭该响应
+                // 重要方法
                 response.finishResponse();
             }
 
         } catch (IOException e) {
-            System.out.println(e);
+            log.info(e);
         } finally {
             AtomicBoolean error = new AtomicBoolean(false);
             res.action(ActionCode.IS_ERROR, error);
@@ -425,14 +427,20 @@ public class CoyoteAdapter implements Adapter {
 
             // Recycle the wrapper request and response
             if (!async) {
+                //如果有异常的话.更新异常的次数
                 updateWrapperErrorCount(request, response);
+                //实例属性资源重置/回收
                 request.recycle();
                 response.recycle();
             }
         }
     }
 
-
+    /**
+     * 如果出异常,则更新请求错误的次数
+     * @param request
+     * @param response
+     */
     private void updateWrapperErrorCount(Request request, Response response) {
         if (response.isError()) {
             Wrapper wrapper = request.getWrapper();

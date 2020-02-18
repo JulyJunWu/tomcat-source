@@ -1155,6 +1155,7 @@ public abstract class ContainerBase extends LifecycleMBeanBase
                 log.warn(sm.getString("containerBase.backgroundProcess.realm", realm), e);
             }
         }
+        // 执行阀门
         Valve current = pipeline.getFirst();
         while (current != null) {
             try {
@@ -1164,6 +1165,7 @@ public abstract class ContainerBase extends LifecycleMBeanBase
             }
             current = current.getNext();
         }
+        //触发监听器
         fireLifecycleEvent(Lifecycle.PERIODIC_EVENT, null);
     }
 

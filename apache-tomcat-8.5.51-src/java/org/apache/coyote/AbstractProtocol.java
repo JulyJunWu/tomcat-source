@@ -646,7 +646,10 @@ public abstract class AbstractProtocol<S> implements ProtocolHandler,
         endpoint.stop();
     }
 
-
+    /**
+     * 销毁
+     * @throws Exception
+     */
     @Override
     public void destroy() throws Exception {
         if(getLog().isInfoEnabled()) {
@@ -726,7 +729,7 @@ public abstract class AbstractProtocol<S> implements ProtocolHandler,
                 // Nothing to do. Socket has been closed.
                 return SocketState.CLOSED;
             }
-
+            // NioChannel对象
             S socket = wrapper.getSocket();
 
             Processor processor = connections.get(socket);
@@ -938,7 +941,7 @@ public abstract class AbstractProtocol<S> implements ProtocolHandler,
                             }
                         }
                     }
-                    //重置资源
+                    //重置资源,对象复用
                     release(processor);
                 }
                 return state;

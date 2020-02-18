@@ -745,6 +745,7 @@ public final class Mapper {
 
         // Virtual host mapping
         MappedHost[] hosts = this.hosts;
+        // 根据请求的host查找对应的Host(容器)
         MappedHost mappedHost = exactFindIgnoreCase(hosts, host);
         if (mappedHost == null) {
             // Note: Internally, the Mapper does not use the leading * on a
@@ -780,6 +781,7 @@ public final class Mapper {
         // Context mapping
         ContextList contextList = mappedHost.contextList;
         MappedContext[] contexts = contextList.contexts;
+        // 根据请求的URI 找到对应的context的索引
         int pos = find(contexts, uri);
         if (pos == -1) {
             return;
@@ -828,6 +830,7 @@ public final class Mapper {
         ContextVersion contextVersion = null;
         ContextVersion[] contextVersions = context.versions;
         final int versionCount = contextVersions.length;
+        //如果说context版本数量大于1,应该是开启reload的功能,默认reload功能是关闭
         if (versionCount > 1) {
             Context[] contextObjects = new Context[contextVersions.length];
             for (int i = 0; i < contextObjects.length; i++) {

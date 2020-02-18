@@ -20,11 +20,14 @@ import java.nio.ByteBuffer;
 
 import org.apache.tomcat.util.buf.ByteBufferUtils;
 
+/**
+ * 最终处理 数据输出到SocketChannel的 类
+ */
 public class SocketBufferHandler {
 
     private volatile boolean readBufferConfiguredForWrite = true;
     /**
-     * 从客户端读取数据
+     * 从客户端读取数据, 一般情况下不会将SocketChannel输入流读取到此处,除非目标ByteBuffer容量不够!
      */
     private volatile ByteBuffer readBuffer;
 

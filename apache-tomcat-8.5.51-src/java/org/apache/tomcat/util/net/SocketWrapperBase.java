@@ -76,6 +76,7 @@ public abstract class SocketWrapperBase<E> {
 
     /**
      * The buffers used for communicating with the socket.
+     * 重要属性,参与流的处理
      */
     protected volatile SocketBufferHandler socketBufferHandler = null;
 

@@ -32,8 +32,9 @@ public class CustomServlet extends HttpServlet {
             if (Objects.nonNull(jsessionid)){
                 servletContext.log(jsessionid.toString());
             }
-            response.setContentType("text/html;charset=UTF-8");
+            response.setContentType("application/json;charset=UTF-8");
             ServletOutputStream outputStream = response.getOutputStream();
+
             outputStream.write(MESSAGE.getBytes(Charset.defaultCharset()));
         }catch (Exception e){
             e.printStackTrace();

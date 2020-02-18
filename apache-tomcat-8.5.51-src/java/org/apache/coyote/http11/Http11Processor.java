@@ -518,6 +518,7 @@ public class Http11Processor extends AbstractProcessor {
                 } else {
                     keptAlive = true;
                     // Set this every time in case limit has been changed via JMX
+                    //设置请求头的最大数量,默认100
                     request.getMimeHeaders().setLimit(endpoint.getMaxHeaderCount());
                     // 解析HTTP 请求头
                     if (!inputBuffer.parseHeaders()) {
@@ -617,10 +618,11 @@ public class Http11Processor extends AbstractProcessor {
                     ByteBuffer byteBuffer = inputBuffer.getByteBuffer();
                     byte[] array = byteBuffer.array();
                     String s = new String(array);
+                    // 可以根据request的content-type指定的编码进行解码
                     String data = UDecoder.URLDecode(s, Charset.defaultCharset());
                     log.info("请求数据->" + data);
-                    log.info("执行 getAdapter().service(request, response); ");
                     //适配器进行服务
+                    log.info("适配器(coyoteAdapt) 开始执行");
                     getAdapter().service(request, response);
                     // Handle when the response was committed before a serious
                     // error occurred.  Throwing a ServletException should both
