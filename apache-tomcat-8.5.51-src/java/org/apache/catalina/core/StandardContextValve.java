@@ -63,11 +63,14 @@ final class StandardContextValve extends ValveBase {
         throws IOException, ServletException {
 
         // Disallow any direct access to resources under WEB-INF or META-INF
+        // 对请求路径进行过滤
+        // 这就是为什么"/META-INF/" 和 "/WEB-INF" 路径无法访问的原因
         MessageBytes requestPathMB = request.getRequestPathMB();
         if ((requestPathMB.startsWithIgnoreCase("/META-INF/", 0))
                 || (requestPathMB.equalsIgnoreCase("/META-INF"))
                 || (requestPathMB.startsWithIgnoreCase("/WEB-INF/", 0))
                 || (requestPathMB.equalsIgnoreCase("/WEB-INF"))) {
+            // 直接404
             response.sendError(HttpServletResponse.SC_NOT_FOUND);
             return;
         }

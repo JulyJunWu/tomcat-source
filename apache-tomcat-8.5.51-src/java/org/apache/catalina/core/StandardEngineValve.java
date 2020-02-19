@@ -71,6 +71,8 @@ final class StandardEngineValve extends ValveBase {
         throws IOException, ServletException {
 
         // Select the Host to be used for this Request
+        // 该请求是否存在Host容器
+        // 没有则是一个非法的请求,因为没有对应的资源
         Host host = request.getHost();
         if (host == null) {
             response.sendError
@@ -84,6 +86,8 @@ final class StandardEngineValve extends ValveBase {
         }
 
         // Ask this Host to process this request
+        // Engine的阀门结束
+        // 开始调用Host容器的阀门
         host.getPipeline().getFirst().invoke(request, response);
 
     }

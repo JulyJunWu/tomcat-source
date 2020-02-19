@@ -300,6 +300,8 @@ public class DefaultServlet extends HttpServlet {
 
     /**
      * Initialize this servlet.
+     *
+     * 配置Servlet的参数
      */
     @Override
     public void init() throws ServletException {

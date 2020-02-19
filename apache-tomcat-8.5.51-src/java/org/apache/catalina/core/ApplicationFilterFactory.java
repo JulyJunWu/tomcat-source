@@ -67,6 +67,7 @@ public final class ApplicationFilterFactory {
                 // Security: Do not recycle
                 filterChain = new ApplicationFilterChain();
             } else {
+                // 如果原始Request是从缓存中获取的,那么这个是有实例的
                 filterChain = (ApplicationFilterChain) req.getFilterChain();
                 if (filterChain == null) {
                     filterChain = new ApplicationFilterChain();

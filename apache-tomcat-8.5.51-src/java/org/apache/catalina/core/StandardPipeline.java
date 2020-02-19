@@ -47,6 +47,10 @@ import org.apache.tomcat.util.res.StringManager;
  * by which per-thread state is maintained will need to be modified.
  *
  * @author Craig R. McClanahan
+ *
+ * 用来管理阀门(Valve)
+ *
+ * 对容器中的阀门进行操作,增减或减少
  */
 public class StandardPipeline extends LifecycleBase
         implements Pipeline, Contained {
@@ -84,6 +88,13 @@ public class StandardPipeline extends LifecycleBase
     /**
      * The basic Valve (if any) associated with this Pipeline.
      * 基础的阀门,有点类似于拦截器
+     *
+     * 这个都会有值
+     *
+     * 这个基础的阀门相当于netty中head和tail ChannelHandleContext
+     *
+     * 一定是在阀门的最后一个执行
+     *
      */
     protected Valve basic = null;
 
@@ -98,6 +109,8 @@ public class StandardPipeline extends LifecycleBase
     /**
      * The first valve associated with this Pipeline.
      * 首个Valve , 链表的头部
+     *
+     * 如果为null,则执行basic
      */
     protected Valve first = null;
 

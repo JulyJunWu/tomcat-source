@@ -265,6 +265,7 @@ final class StandardWrapperValve
             // Deallocate the allocated servlet instance
             try {
                 if (servlet != null) {
+                    // 回收Servlet
                     wrapper.deallocate(servlet);
                 }
             } catch (Throwable e) {

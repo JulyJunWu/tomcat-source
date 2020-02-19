@@ -113,6 +113,7 @@ public class StandardWrapper extends ContainerBase
     /**
      * The count of allocations that are currently active (even if they
      * are for the same instance, as will be true on a non-STM servlet).
+     * 代表当前Servlet有多少个地方使用了
      */
     protected final AtomicInteger countAllocated = new AtomicInteger(0);
 
@@ -125,6 +126,7 @@ public class StandardWrapper extends ContainerBase
 
     /**
      * The (single) possibly uninitialized instance of this servlet.
+     *  分配一个Servlet需要加锁,而此处的volatile是保证其可见性
      */
     protected volatile Servlet instance = null;
 
@@ -738,6 +740,10 @@ public class StandardWrapper extends ContainerBase
      * @exception ServletException if the servlet init() method threw
      *  an exception
      * @exception ServletException if a loading error occurs
+     *
+     *  分配Servlet , 是一个懒加载
+     *
+     *  只有在第一次使用时,才会去实例化和初始化Servlet
      */
     @Override
     public Servlet allocate() throws ServletException {
@@ -852,7 +858,6 @@ public class StandardWrapper extends ContainerBase
             countAllocated.decrementAndGet();
             return;
         }
-
         // Unlock and free this instance
         synchronized (instancePool) {
             countAllocated.decrementAndGet();
@@ -1019,6 +1024,11 @@ public class StandardWrapper extends ContainerBase
      * at server startup time.
      * @return the loaded Servlet instance
      * @throws ServletException for a Servlet load error
+     *
+     *  1.实例化Servlet
+     *  2.如果有的话,读取Servlet注解MultipartConfig(主要是针对上传文件)
+     *  3.初始化Servlet
+     *  4.触发 "load" 事件 , 通过监听器
      */
     public synchronized Servlet loadServlet() throws ServletException {
 
@@ -1089,9 +1099,9 @@ public class StandardWrapper extends ContainerBase
                 }
                 singleThreadModel = true;
             }
-
+            // 初始化Servlet
             initServlet(servlet);
-
+            // 默认情况下是没有监听器了
             fireContainerEvent("load", this);
 
             loadTime=System.currentTimeMillis() -t1;
