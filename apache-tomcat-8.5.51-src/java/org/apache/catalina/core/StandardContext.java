@@ -4868,14 +4868,22 @@ public class StandardContext extends ContainerBase
      * @param children Array of wrappers for all currently defined
      *  servlets (including those not declared load on startup)
      * @return <code>true</code> if load on startup was considered successful
+     *
+     * 加载 配置了 loadOnStartup 的 Servlet
+     *
      */
     public boolean loadOnStartup(Container children[]) {
 
         // Collect "load on startup" servlets that need to be initialized
+        // 使用TreeMap来排序
         TreeMap<Integer, ArrayList<Wrapper>> map = new TreeMap<>();
         for (int i = 0; i < children.length; i++) {
             Wrapper wrapper = (Wrapper) children[i];
             int loadOnStartup = wrapper.getLoadOnStartup();
+            // 过滤 是否 需要立即加载和初始化的Wrapper容器
+            // 负数 , 则是使用懒加载
+            // 大等于0 , 是使用立即加载(即在服务器启动时就加载)
+            // 当大等于 0 时 , 代表Servlet加载的顺序 , 数字越小, 优先级越高
             if (loadOnStartup < 0)
                 continue;
             Integer key = Integer.valueOf(loadOnStartup);
@@ -4891,6 +4899,7 @@ public class StandardContext extends ContainerBase
         for (ArrayList<Wrapper> list : map.values()) {
             for (Wrapper wrapper : list) {
                 try {
+                    // 加载该Wrapper对应的Servlet
                     wrapper.load();
                 } catch (ServletException e) {
                     getLogger().error(sm.getString("standardContext.loadOnStartup.loadException",
@@ -5202,9 +5211,9 @@ public class StandardContext extends ContainerBase
                     ok = false;
                 }
             }
-
             // Load and initialize all "load on startup" servlets
             if (ok) {
+                // 加载和初始化 标志了loadOnStartup的Servlet
                 if (!loadOnStartup(findChildren())){
                     log.error(sm.getString("standardContext.servletFail"));
                     ok = false;

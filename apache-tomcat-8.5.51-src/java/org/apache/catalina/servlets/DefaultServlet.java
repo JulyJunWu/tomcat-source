@@ -300,17 +300,17 @@ public class DefaultServlet extends HttpServlet {
 
     /**
      * Initialize this servlet.
-     *
      * 配置Servlet的参数
      */
     @Override
     public void init() throws ServletException {
+        String value;
+        // 其实就是获取我们在 web.xml在servlet标签中配置的init-param参数
+        if ((value = getServletConfig().getInitParameter("debug")) != null)
+            debug = Integer.parseInt(value);
 
-        if (getServletConfig().getInitParameter("debug") != null)
-            debug = Integer.parseInt(getServletConfig().getInitParameter("debug"));
-
-        if (getServletConfig().getInitParameter("input") != null)
-            input = Integer.parseInt(getServletConfig().getInitParameter("input"));
+        if ( (value = getServletConfig().getInitParameter("input")) != null)
+            input = Integer.parseInt(value);
 
         if (getServletConfig().getInitParameter("output") != null)
             output = Integer.parseInt(getServletConfig().getInitParameter("output"));

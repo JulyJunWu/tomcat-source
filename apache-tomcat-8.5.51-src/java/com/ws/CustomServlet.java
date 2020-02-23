@@ -17,6 +17,8 @@ import java.util.Objects;
  */
 public class CustomServlet extends HttpServlet {
 
+    private String customName;
+
     private static final String MESSAGE = "访问成功";
 
     @Override
@@ -39,5 +41,9 @@ public class CustomServlet extends HttpServlet {
         }catch (Exception e){
             e.printStackTrace();
         }
+    }
+
+    public void setCustomName(String customName) {
+        this.customName = customName;
     }
 }

@@ -120,6 +120,8 @@ public class StandardWrapper extends ContainerBase
 
     /**
      * The facade associated with this wrapper.
+     *
+     *  外观模式 , 主要是一个ServletConfig接口实现类
      */
     protected final StandardWrapperFacade facade = new StandardWrapperFacade(this);
 
@@ -133,6 +135,7 @@ public class StandardWrapper extends ContainerBase
 
     /**
      * Flag that indicates if this instance has been initialized
+     * 表示Servlet 实例是否 初始化完毕
      */
     protected volatile boolean instanceInitialized = false;
 
@@ -140,6 +143,7 @@ public class StandardWrapper extends ContainerBase
     /**
      * The load-on-startup order value (negative value means load on
      * first call) for this servlet.
+     * 负值代表该Wrapper第一次代用
      */
     protected int loadOnStartup = -1;
 
@@ -1053,6 +1057,7 @@ public class StandardWrapper extends ContainerBase
 
             InstanceManager instanceManager = ((StandardContext)getParent()).getInstanceManager();
             try {
+                // 实例化Servlet实例
                 servlet = (Servlet) instanceManager.newInstance(servletClass);
             } catch (ClassCastException e) {
                 unavailable(null);
@@ -1075,6 +1080,7 @@ public class StandardWrapper extends ContainerBase
                     (sm.getString("standardWrapper.instantiate", servletClass), e);
             }
 
+            // 是否含有该注解(主要是用于上传下载限制的)
             if (multipartConfigElement == null) {
                 MultipartConfig annotation =
                         servlet.getClass().getAnnotation(MultipartConfig.class);
@@ -1153,9 +1159,10 @@ public class StandardWrapper extends ContainerBase
                     }
                 }
             } else {
+                // 执行 Servlet周期方法 - init
                 servlet.init(facade);
             }
-
+            //设为已初始化完毕
             instanceInitialized = true;
         } catch (UnavailableException f) {
             unavailable(f);

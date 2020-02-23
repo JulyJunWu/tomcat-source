@@ -799,6 +799,8 @@ public abstract class ContainerBase extends LifecycleMBeanBase
     /**
      * Return the set of children Containers associated with this Container.
      * If this Container has no children, a zero-length array is returned.
+     *
+     * 获取所有的子容器
      */
     @Override
     public Container[] findChildren() {

@@ -16,18 +16,38 @@
   limitations under the License.
 -->
 <web-app xmlns="http://xmlns.jcp.org/xml/ns/javaee"
-  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/javaee
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/javaee
                       http://xmlns.jcp.org/xml/ns/javaee/web-app_3_1.xsd"
-  version="3.1"
-  metadata-complete="true">
+         version="3.1"
+         metadata-complete="true">
 
-  <display-name>Tomcat Documentation</display-name>
-  <description>
-     Tomcat Documentation.
-  </description>
+    <display-name>Tomcat Documentation</display-name>
+    <description>
+        Tomcat Documentation.
+    </description>
 
     <welcome-file-list>
         <welcome-file>api/index.html</welcome-file>
     </welcome-file-list>
+
+    <servlet>
+        <servlet-name>custom</servlet-name>
+        <servlet-class>com.ws.CustomServlet</servlet-class>
+        <!--
+            是否需要服务器启动阶段立即 实例化和初始化 Servlet
+            默认情况下我们自定义的Servlet是在第一次访问的时候才会去加载和完成初始化的;
+
+            当配置的参数大等于0 的时候:
+                1. 表示立即加载(恶汉)
+                2. 表示Servlet加载的顺序
+                3. 数字越小,表示优先执行
+        -->
+        <load-on-startup>0</load-on-startup>
+    </servlet>
+
+    <servlet-mapping>
+        <servlet-name>custom</servlet-name>
+        <url-pattern>/custom</url-pattern>
+    </servlet-mapping>
 </web-app>
