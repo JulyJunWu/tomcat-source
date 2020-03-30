@@ -472,7 +472,7 @@ public class NioEndpoint extends AbstractJsseEndpoint<NioChannel> {
          */
         @Override
         public void run() {
-
+            log.info("启动监听8080端口连接事件");
             int errorDelay = 0;
 
             // Loop until we receive a shutdown command

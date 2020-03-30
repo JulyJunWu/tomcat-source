@@ -285,6 +285,7 @@ public class NioBlockingSelector {
 
         @Override
         public void run() {
+            log.info(getClass().getSimpleName() + "线程启动");
             while (run) {
                 try {
                     events();

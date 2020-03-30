@@ -147,6 +147,8 @@ public final class ClassLoaderFactory {
      * @return the new class loader
      *
      * @exception Exception if an error occurs constructing the class loader
+     *
+     * 创建Url类加载器
      */
     public static ClassLoader createClassLoader(List<Repository> repositories,
                                                 final ClassLoader parent)

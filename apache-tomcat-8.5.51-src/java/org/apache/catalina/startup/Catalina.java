@@ -88,12 +88,15 @@ public class Catalina {
 
     /**
      * Pathname to the server configuration file.
+     *
+     * 服务器配置
      */
     protected String configFile = "conf/server.xml";
 
     // XXX Should be moved to embedded
     /**
      * The shared extensions class loader for this server.
+     * 父加载器
      */
     protected ClassLoader parentClassLoader =
         Catalina.class.getClassLoader();
@@ -107,12 +110,14 @@ public class Catalina {
 
     /**
      * Use shutdown hook flag.
+     * 是否使用钩子
      */
     protected boolean useShutdownHook = true;
 
 
     /**
      * Shutdown hook.
+     * 钩子线程
      */
     protected Thread shutdownHook = null;
 
@@ -528,16 +533,20 @@ public class Catalina {
 
     /**
      * Start a new server instance.
+     *
+     * 1.解析server.xml
+     * 2.执行Server.init()
+     *
      */
     public void load() {
-
+        // 如果已load,直接返回
         if (loaded) {
             return;
         }
         loaded = true;
 
         long t1 = System.nanoTime();
-        //验证临时目录
+        //验证临时目录(无关要紧)
         initDirs();
 
         // Before digester - it may be needed
@@ -545,7 +554,7 @@ public class Catalina {
         initNaming();
 
         // Create and execute our Digester
-        //创建解析,就是用来解析server.xml
+        //创建解析,用来解析server.xml
         Digester digester = createStartDigester();
 
         InputSource inputSource = null;

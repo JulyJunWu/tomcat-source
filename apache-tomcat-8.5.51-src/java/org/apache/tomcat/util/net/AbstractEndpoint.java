@@ -579,7 +579,7 @@ public abstract class AbstractEndpoint<S> {
      *
      * JDK默认是50个
      * tomcat默认100
-     * netty默认 1024
+     * netty默认 200
      *
      */
     private int acceptCount = 100;
@@ -1175,6 +1175,7 @@ public abstract class AbstractEndpoint<S> {
 
     public void init() throws Exception {
         if (bindOnInit) {
+            // 绑定端口监听
             bind();
             bindState = BindState.BOUND_ON_INIT;
         }
@@ -1265,6 +1266,7 @@ public abstract class AbstractEndpoint<S> {
             Thread t = new Thread(acceptors[i], threadName);
             t.setPriority(getAcceptorThreadPriority());
             t.setDaemon(getDaemon());
+            getLog().info("启动Acceptor线程" + threadName);
             t.start();
         }
     }

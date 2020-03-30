@@ -142,7 +142,14 @@ public final class Bootstrap {
 
     // -------------------------------------------------------- Private Methods
 
-
+    /**
+     * 初始化类加载器, 默认情况下commonLoader,catalinaLoader,sharedLoader都是同一个类加载实例(UrlClassLoader)
+     *
+     *              commonLoader(UrlClassloader)
+     *             /             |
+     *       catalinaLoader   sharedLoader
+     *
+     */
     private void initClassLoaders() {
         try {
             commonLoader = createClassLoader("common", null);
@@ -249,18 +256,23 @@ public final class Bootstrap {
     /**
      * Initialize daemon.
      * @throws Exception Fatal initialization error
+     *
+     *  1.从配置加载所需类加载器并初始化
+     *  2.设置线程上文类加载器
+     *  3.反射创建Catalina实例,设置安全访问保护/设置父加载器等
      */
     public void init() throws Exception {
-
+        // 初始化类加载器
         initClassLoaders();
-
+        // 设置线程上下文类加载为catalinaLoader
         Thread.currentThread().setContextClassLoader(catalinaLoader);
-
+        // 忽略,未开启安全管理
         SecurityClassLoad.securityClassLoad(catalinaLoader);
 
         // Load our startup class and call its process() method
         if (log.isDebugEnabled())
             log.debug("Loading startup class");
+        // 加载Catalina
         Class<?> startupClass = catalinaLoader.loadClass("org.apache.catalina.startup.Catalina");
         Object startupInstance = startupClass.getConstructor().newInstance();
 
@@ -272,8 +284,8 @@ public final class Bootstrap {
         paramTypes[0] = Class.forName("java.lang.ClassLoader");
         Object paramValues[] = new Object[1];
         paramValues[0] = sharedLoader;
-        Method method =
-            startupInstance.getClass().getMethod(methodName, paramTypes);
+        // 反射设置 父加载器
+        Method method = startupInstance.getClass().getMethod(methodName, paramTypes);
         method.invoke(startupInstance, paramValues);
 
         catalinaDaemon = startupInstance;
@@ -281,7 +293,10 @@ public final class Bootstrap {
 
 
     /**
+     * 重点
      * Load daemon.
+     * 1.解析参数
+     * 2.反射执行Catalina.load
      */
     private void load(String[] arguments) throws Exception {
 
@@ -298,8 +313,7 @@ public final class Bootstrap {
             param = new Object[1];
             param[0] = arguments;
         }
-        Method method =
-            catalinaDaemon.getClass().getMethod(methodName, paramTypes);
+        Method method =  catalinaDaemon.getClass().getMethod(methodName, paramTypes);
         if (log.isDebugEnabled()) {
             log.debug("Calling startup class " + method);
         }
@@ -335,6 +349,7 @@ public final class Bootstrap {
 
 
     /**
+     * 重点
      * Start the Catalina daemon.
      * @throws Exception Fatal start error
      */
@@ -398,6 +413,7 @@ public final class Bootstrap {
      * Set flag.
      * @param await <code>true</code> if the daemon should block
      * @throws Exception Reflection error
+     * 给Catalina设置阻塞标志,创建socket监听关闭命令
      */
     public void setAwait(boolean await)
         throws Exception {
@@ -436,6 +452,8 @@ public final class Bootstrap {
      * scripts.
      *
      * @param args Command line arguments to be processed
+     *
+     *  启动入口
      */
     public static void main(String args[]) {
 
@@ -473,7 +491,7 @@ public final class Bootstrap {
                 args[args.length - 1] = "stop";
                 daemon.stop();
             } else if (command.equals("start")) {
-                // 其实就是设置是否一个关闭程序的Socket标记
+                //开启socket监听关闭命令,其实就是设置是否一个关闭程序的Socket标记(一定是true,否则程序直接结束...)
                 daemon.setAwait(true);
                 daemon.load(args);
                 daemon.start();

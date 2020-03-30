@@ -373,7 +373,7 @@ public class StandardPipeline extends LifecycleBase
                 current = current.getNext();
             }
         }
-
+        // 触发添加事件
         container.fireContainerEvent(Container.ADD_VALVE_EVENT, valve);
     }
 
